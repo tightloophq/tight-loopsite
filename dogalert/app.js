@@ -1,3 +1,4 @@
+
 // ===== FIREBASE CONFIG =====
 const firebaseConfig = {
   apiKey: "AIzaSyDmCfpAPHiPHjsrFnI7Uh_9XcB-FSfRba4",
@@ -31,23 +32,38 @@ window._dogalertInit = async function () {
     document.getElementById("lng").value = e.latLng.lng().toFixed(6);
   });
 
-  // UI
+  // UI events
   document.getElementById("submit").addEventListener("click", submitReport);
   document.getElementById("applyFilters").addEventListener("click", subscribeToPins);
 
   // Live pins
   subscribeToPins();
 
-  // Geolocation (optional)
+  // Geolocation (add "You are here" dot)
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((pos) => {
       const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       map.setCenter(c);
       map.setZoom(13);
+
+      new google.maps.Marker({
+        position: c,
+        map,
+        title: "You are here",
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: "lime",
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: "white"
+        }
+      });
     }, () => {});
   }
 };
 
+// ===== FIRESTORE QUERIES =====
 function pinsQuery() {
   let q = db.collection("reports").orderBy("createdAt", "desc").limit(500);
   const type = document.getElementById("filterType").value;
@@ -80,23 +96,44 @@ function subscribeToPins() {
   }, console.error);
 }
 
-function clearMarkers(){ for (const m of markers) m.setMap(null); markers.length = 0; }
+function clearMarkers() {
+  for (const m of markers) m.setMap(null);
+  markers.length = 0;
+}
 
+// ===== SUBMIT REPORT =====
 async function submitReport() {
   const type = document.getElementById("type").value.trim();
   const breed = document.getElementById("breed").value.trim();
   const desc = (document.getElementById("desc") || document.getElementById("description"))?.value?.trim() || "";
   const lat = parseFloat(document.getElementById("lat").value);
   const lng = parseFloat(document.getElementById("lng").value);
+
   if (!type || !breed || !Number.isFinite(lat) || !Number.isFinite(lng)) {
     alert("Pick type + breed and click the map to set location.");
     return;
   }
+
   await db.collection("reports").add({
-    type, breed, desc, description: desc, lat, lng,
+    type,
+    breed,
+    desc,
+    description: desc,
+    lat,
+    lng,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
+
   alert("Report submitted.");
 }
 
-function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
+// ===== UTILS =====
+function escapeHTML(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;"
+  }[c]));
+}
