@@ -1,3 +1,4 @@
+
 // ===== FIREBASE CONFIG =====
 const firebaseConfig = {
   apiKey: "AIzaSyDmCfpAPHiPHjsrFnI7Uh_9XcB-FSfRba4",
@@ -13,7 +14,7 @@ const firebaseConfig = {
 let map, markers = [];
 let db;
 
-// Init Google Map
+// Expose init for Google Maps callback
 window._dogalertInit = async function () {
   // Firebase
   firebase.initializeApp(firebaseConfig);
@@ -21,37 +22,34 @@ window._dogalertInit = async function () {
 
   // Map
   map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 53.5461, lng: -113.4938 }, // Edmonton default
-    zoom: 12,
-    styles: [{ elementType: "geometry", stylers: [{ color: "#212121" }] }]
+    center: { lat: 53.5461, lng: -113.4938 }, // Edmonton by default
+    zoom: 12
   });
 
-  // Try geolocation
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        const userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        map.setCenter(userLoc);
-        new google.maps.Marker({
-          position: userLoc,
-          map,
-          title: "You are here",
-          icon: { url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" }
-        });
-      },
-      () => console.warn("Geolocation blocked")
-    );
-  }
+  // Click map to fill lat/lng
+  map.addListener("click", (e) => {
+    document.getElementById("lat").value = e.latLng.lat().toFixed(6);
+    document.getElementById("lng").value = e.latLng.lng().toFixed(6);
+  });
 
-  // UI handlers
+  // UI Handlers
   document.getElementById("submit").addEventListener("click", submitReport);
-  document.getElementById("applyFilters").addEventListener("click", applyFilters);
+  document.getElementById("applyFilters").addEventListener("click", subscribeToPins);
 
   // Live pins
   subscribeToPins();
+
+  // Geolocation
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      map.setCenter(c);
+      map.setZoom(13);
+    }, () => {});
+  }
 };
 
-// Build query
+// ===== Firestore Query =====
 function pinsQuery() {
   let q = db.collection("reports").orderBy("createdAt", "desc").limit(500);
   const type = document.getElementById("filterType").value;
@@ -66,47 +64,57 @@ function subscribeToPins() {
   if (unsubscribe) unsubscribe();
   clearMarkers();
 
-  unsubscribe = pinsQuery().onSnapshot(snap => {
+  unsubscribe = pinsQuery().onSnapshot((snap) => {
     clearMarkers();
-    snap.forEach(doc => {
+    snap.forEach((doc) => {
       const d = doc.data();
-      if (!d.lat || !d.lng) return;
-      const marker = new google.maps.Marker({
+      if (!d?.lat || !d?.lng) return;
+
+      const m = new google.maps.Marker({
         position: { lat: d.lat, lng: d.lng },
         map,
-        title: `${d.type} - ${d.breed}`
+        title: `${d.type} • ${d.breed}`
       });
-      const infowindow = new google.maps.InfoWindow({
-        content: `<b>${d.type}</b><br>${d.breed}<br>${d.description || ""}`
+
+      const info = new google.maps.InfoWindow({
+        content: `<div><b>${escapeHTML(d.type)} • ${escapeHTML(d.breed)}</b><br>${escapeHTML(d.description||d.desc||"")}</div>`
       });
-      marker.addListener("click", () => infowindow.open(map, marker));
-      markers.push(marker);
+
+      m.addListener("click", () => info.open({ anchor: m, map }));
+      markers.push(m);
     });
-  });
+  }, (err) => console.error(err));
 }
 
 function clearMarkers() {
-  markers.forEach(m => m.setMap(null));
-  markers = [];
+  for (const m of markers) m.setMap(null);
+  markers.length = 0;
 }
 
-// Submit report
+// ===== Submit Report =====
 async function submitReport() {
-  const type = document.getElementById("type").value;
-  const breed = document.getElementById("breed").value;
-  const description = document.getElementById("description").value;
+  const type = document.getElementById("type").value.trim();
+  const breed = document.getElementById("breed").value.trim();
+  const desc = (document.getElementById("desc") || document.getElementById("description"))?.value?.trim() || "";
   const lat = parseFloat(document.getElementById("lat").value);
   const lng = parseFloat(document.getElementById("lng").value);
 
-  if (!lat || !lng) {
-    alert("Please click the map to set a location.");
+  if (!type || !breed || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+    alert("Pick type + breed and click the map to set location.");
     return;
   }
 
   await db.collection("reports").add({
-    type, breed, description, lat, lng,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    type, breed, desc, description: desc, lat, lng,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
 
-  alert("Report submitted!");
+  alert("Report submitted.");
+}
+
+// ===== Utility =====
+function escapeHTML(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#39;" }[c])
+  );
 }
