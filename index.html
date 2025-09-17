@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>TightLoop Holdings</title>
+  <style>
+    :root { --bg:#0b0b0f; --card:#14141b; --txt:#eef2ff; --muted:#9aa3b2; --accent:#4ade80; }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.6 system-ui,Segoe UI,Roboto,Arial}
+    header{padding:28px 20px;border-bottom:1px solid #222}
+    .wrap{max-width:1100px;margin:0 auto;padding:28px 20px}
+    .hero{display:grid;gap:16px}
+    .card{background:var(--card);border:1px solid #222;border-radius:16px;padding:20px}
+    a.button{display:inline-block;background:var(--accent);color:#08210f;text-decoration:none;padding:12px 16px;border-radius:12px;font-weight:700}
+    footer{padding:28px 20px;color:var(--muted);border-top:1px solid #222}
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <h1 style="margin:0">TightLoop Holdings</h1>
+    <p style="margin:.25rem 0 0;color:#9aa3b2">Looped in. Locked down. Moving forward.</p>
+  </header>
+
+  <main class="wrap hero">
+    <section class="card">
+      <h2 style="margin-top:0">Dog Alert</h2>
+      <p>Map nearby reports of vicious/loose dogs, post sightings, and stay safe.</p>
+      <a class="button" href="./dogalert/" aria-label="Open Dog Alert app">Open Dog Alert</a>
+    </section>
+    <section class="card">
+      <h2 style="margin-top:0">About</h2>
+      <p>TightLoop builds practical tools fast. Dog Alert generates cash flow first, fueling bigger plays like TrustBorn.</p>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    © <span id="y"></span> TightLoop Holdings
+  </footer>
+  <script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+</body>
+</html>
