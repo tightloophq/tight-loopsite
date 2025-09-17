@@ -118,13 +118,13 @@
   <footer>© 2025 TightLoop Holdings</footer>
 
   <!-- Firebase SDKs -->
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-  <!-- App code -->
-  <script defer src="./app.js"></script>
+  <!-- App code (LOAD THIS FIRST, no defer) -->
+  <script src="/tight-loopsite/dogalert/app.js?v=1"></script>
 
-  <!-- Google Maps JS (with your API key and correct callback) -->
+  <!-- Google Maps JS (async; callback now exists) -->
   <script async
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=_dogalertInit&libraries=places">
   </script>
