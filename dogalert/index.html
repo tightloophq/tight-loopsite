@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Dog Alert</title>
+  <style>
+    :root { --bg:#0b0b0f; --panel:#12121a; --txt:#eef2ff; --muted:#9aa3b2; --accent:#60a5fa; }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 system-ui,Segoe UI,Roboto}
+    .grid{display:grid;grid-template-columns:360px 1fr;min-height:100vh}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}.panel{order:2;height:auto}}
+    .panel{background:var(--panel);border-right:1px solid #1e1e28;padding:16px}
+    .section{border:1px solid #242436;border-radius:14px;padding:14px;margin-bottom:14px}
+    label{display:block;margin:8px 0 4px;color:var(--muted);font-size:13px}
+    input,select,textarea,button{width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a3c;background:#0e0e15;color:var(--txt)}
+    button{background:var(--accent);color:#07121f;border:none;font-weight:700;cursor:pointer}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    #map{height:100vh;width:100%}
+    .badge{display:inline-block;font-size:12px;padding:2px 8px;border:1px solid #2a2a3c;border-radius:999px;color:var(--muted)}
+  </style>
+
+  <!-- Firebase SDKs -->
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <!-- App code -->
+  <script defer src="./app.js"></script>
+
+  <!-- Google Maps JS (replace YOUR_GOOGLE_MAPS_API_KEY) -->
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=_dogalertInit&libraries=places">
+  </script>
+</head>
+<body>
+  <div class="grid">
+    <aside class="panel">
+      <h2 style="margin-top:0">Dog Alert <span class="badge" id="liveBadge">LIVE</span></h2>
+
+      <div class="section">
+        <h3 style="margin:0 0 8px">Search</h3>
+        <input id="search" placeholder="Find a city, park, or address"/>
+        <small style="color:var(--muted)">Tip: type a city and hit Enter.</small>
+      </div>
+
+      <div class="section">
+        <h3 style="margin:0 0 8px">Filters</h3>
+        <div class="row">
+          <div>
+            <label>Type</label>
+            <select id="filterType">
+              <option value="">Any</option>
+              <option>Loose</option>
+              <option>Vicious</option>
+              <option>Bite</option>
+              <option>Pack</option>
+            </select>
+          </div>
+          <div>
+            <label>Breed</label>
+            <select id="filterBreed">
+              <option value="">Any</option>
+              <option>Pit Bull</option>
+              <option>Rottweiler</option>
+              <option>German Shepherd</option>
+              <option>Husky</option>
+              <option>Unknown</option>
+            </select>
+          </div>
+        </div>
+        <button id="applyFilters" style="margin-top:10px">Apply</button>
+      </div>
+
+      <div class="section">
+        <h3 style="margin:0 0 8px">Report a Sighting</h3>
+        <label>Type</label>
+        <select id="type">
+          <option>Loose</option>
+          <option>Vicious</option>
+          <option>Bite</option>
+          <option>Pack</option>
+        </select>
+
+        <label>Breed</label>
+        <select id="breed">
+          <option>Pit Bull</option>
+          <option>Rottweiler</option>
+          <option>German Shepherd</option>
+          <option>Husky</option>
+          <option>Unknown</option>
+        </select>
+
+        <label>Description</label>
+        <textarea id="desc" rows="3" placeholder="Where, what it did, any details…"></textarea>
+
+        <div class="row">
+          <div>
+            <label>Latitude</label>
+            <input id="lat" placeholder="49.8951"/>
+          </div>
+          <div>
+            <label>Longitude</label>
+            <input id="lng" placeholder="-97.1384"/>
+          </div>
+        </div>
+
+        <button id="submit" style="margin-top:10px">Submit Report</button>
+        <small id="status" style="display:block;margin-top:8px;color:var(--muted)"></small>
+      </div>
+
+      <div class="section">
+        <h3 style="margin:0 0 8px">How it works</h3>
+        <p style="margin:0;color:var(--muted)">Pins stream in live from Firestore. Use search to move the map. Click a pin for details.</p>
+      </div>
+
+      <p><a href="../" style="color:#9ecbff;text-decoration:none">← Back to TightLoop</a></p>
+    </aside>
+
+    <main id="map"></main>
+  </div>
+</body>
+</html>
