@@ -31,6 +31,7 @@
     .price p{margin:0 0 8px;color:var(--muted);font-size:13px;line-height:1.4}
     .price a{display:inline-block;margin-top:6px;padding:8px 12px;border-radius:10px;border:1px solid var(--border);text-decoration:none;color:var(--text)}
     gmpx-place-autocomplete{display:block}
+    .btn-row{display:flex;gap:8px}
   </style>
 </head>
 <body>
@@ -48,36 +49,10 @@
         <h2>Search</h2>
         <label for="placeSearch">Find a place</label>
         <gmpx-place-autocomplete id="placeSearch" placeholder="Search address, park, etc."></gmpx-place-autocomplete>
-        <div class="muted" style="margin-top:8px;">Tip: Drag/zoom the map or search; click on the map to set report location.</div>
+        <div class="muted" style="margin-top:8px;">Tip: Drag/zoom the map or search; you can post using map center or your GPS.</div>
       </section>
 
-      <section>
-        <h2>Filters</h2>
-        <div class="row">
-          <div>
-            <label for="typeFilter">Type</label>
-            <select id="typeFilter">
-              <option value="">All types</option>
-              <option>Aggressive</option>
-              <option>Loose</option>
-              <option>Suspicious</option>
-            </select>
-          </div>
-          <div>
-            <label for="breedFilter">Breed</label>
-            <select id="breedFilter">
-              <option value="">All breeds</option>
-              <option>Pit Bull</option>
-              <option>German Shepherd</option>
-              <option>Rottweiler</option>
-              <option>Husky</option>
-              <option>Bulldog</option>
-              <option>Labrador</option>
-              <option>Other / Unknown</option>
-            </select>
-          </div>
-        </div>
-      </section>
+      <!-- REMOVED the extra Filters block to avoid duplicates -->
 
       <section>
         <h2>Report a Dog</h2>
@@ -108,16 +83,21 @@
           <div class="row">
             <div>
               <label for="lat">Latitude</label>
-              <input id="lat" placeholder="Click map to fill" required />
+              <input id="lat" placeholder="(auto if empty)" />
             </div>
             <div>
               <label for="lng">Longitude</label>
-              <input id="lng" placeholder="Click map to fill" required />
+              <input id="lng" placeholder="(auto if empty)" />
             </div>
           </div>
 
+          <div class="btn-row" style="margin-top:8px;">
+            <button type="button" id="btnUseCenter" style="flex:1;">Use Map Center</button>
+            <button type="button" id="btnUseGps" style="flex:1;">Use My GPS</button>
+          </div>
+
           <button type="submit" style="margin-top:12px;">Post Report</button>
-          <div class="muted" style="margin-top:8px;">Location fills when you click the map. You can adjust before posting.</div>
+          <div class="muted" style="margin-top:8px;">If you leave lat/lng blank, we’ll use the map center automatically.</div>
         </form>
       </section>
 
@@ -151,7 +131,7 @@
   <!-- App code -->
   <script type="module" src="./app.js"></script>
 
-  <!-- Extended component library (needed for PlaceAutocompleteElement) -->
+  <!-- Extended component library (for PlaceAutocompleteElement) -->
   <script src="https://unpkg.com/@googlemaps/extended-component-library"></script>
 
   <!-- Google Maps JS with your real key -->
