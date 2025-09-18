@@ -2,100 +2,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Dog Alert LIVE</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    :root { --bg:#111; --panel:#1a1a1a; --muted:#bfbfbf; --accent:#0ea5e9; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #111;
-      color: white;
-      display: flex;
-      height: 100vh;
+      margin: 0; font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg); color: #fff; display: flex; min-height: 100vh;
     }
     #sidebar {
-      width: 300px;
-      background: #111;
-      padding: 15px;
-      overflow-y: auto;
-      box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+      width: 300px; background: var(--bg); padding: 16px 14px; overflow-y: auto;
+      border-right: 1px solid #222;
     }
-    #map {
-      flex: 1;
-      height: 100%;
+    #map { flex: 1; height: 100vh; }
+    h1 { margin: 0 0 8px; font-size: 20px; color: #32cd32; }
+    label { display:block; font-size:12px; color: var(--muted); margin-top:10px; }
+    input, select, textarea, button {
+      width: 100%; margin-top:6px; padding:9px 10px; border-radius:6px; border:1px solid #2a2a2a;
+      background:#0f0f0f; color:#fff; font-size:14px;
     }
-    h1 {
-      font-size: 20px;
-      margin-bottom: 10px;
-      color: limegreen;
+    textarea { min-height: 80px; resize: vertical; }
+    .btn-primary { background:#0D6EFD; border:none; font-weight:600; cursor:pointer; }
+    .btn-primary:hover { filter: brightness(1.05); }
+    .section-title { margin: 18px 0 8px; font-size:16px; font-weight:700; }
+    /* Pricing */
+    .plans { margin-top: 18px; }
+    .plans-title { text-align:center; color:#ffd84d; font-weight:700; margin-bottom:10px; }
+    .plan-row { display:flex; gap:12px; }
+    .plan {
+      flex:1; background: var(--panel); border-radius:12px; padding:14px; box-shadow: 0 2px 8px rgba(0,0,0,.5);
     }
-    select, input, textarea, button {
-      width: 100%;
-      margin: 5px 0;
-      padding: 8px;
-      border-radius: 4px;
-      border: none;
+    .plan h3 { margin:0; font-size:16px; }
+    .price { margin:6px 0 8px; color:#ffd84d; font-weight:700; }
+    .plan p { margin:0 0 12px; font-size:13px; color: var(--muted); line-height:1.35; }
+    .btn-basic { background:#ffcc00; color:#111; border:none; font-weight:700; cursor:pointer; }
+    .btn-pro   { background:#2ecc71; color:#111; border:none; font-weight:700; cursor:pointer; }
+    .copyright { margin:16px 0 6px; font-size:12px; color:#8a8a8a; text-align:center; }
+    /* InfoWindow content improvements */
+    .iw {
+      color:#000; font-size:14px; max-width:240px;
     }
-    button {
-      cursor: pointer;
-    }
-    .filter-btn {
-      background: #007bff;
-      color: white;
-      border: none;
-      font-weight: bold;
-    }
-    .plan-section {
-      margin-top: 20px;
-    }
-    .plan-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: gold;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-    .plan-box {
-      background: #222;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
-    }
-    .plan-box h2 {
-      margin: 0;
-      font-size: 16px;
-      color: white;
-    }
-    .plan-box p {
-      margin: 5px 0 15px;
-      font-size: 14px;
-      color: #ccc;
-    }
-    .plan-box button {
-      width: 100%;
-      padding: 10px;
-      font-size: 14px;
-      border-radius: 6px;
-      border: none;
-      font-weight: bold;
-    }
-    .buy-basic {
-      background: gold;
-      color: black;
-    }
-    .sub-pro {
-      background: limegreen;
-      color: black;
-    }
-    .copyright {
-      font-size: 12px;
-      color: #888;
-      margin-top: 20px;
-      text-align: center;
-    }
+    .iw b { font-size:15px; }
   </style>
 </head>
 <body>
@@ -103,9 +53,9 @@
     <h1>Dog Alert LIVE</h1>
 
     <label>Search</label>
-    <input type="text" id="searchBox" placeholder="Type a city and hit Enter">
+    <input id="searchBox" placeholder="Type a city and hit Enter" />
 
-    <label>Type & Breed</label>
+    <div class="section-title">Type & Breed</div>
     <select id="typeFilter">
       <option value="">Any</option>
       <option value="Loose">Loose</option>
@@ -114,38 +64,38 @@
     </select>
     <select id="breedFilter">
       <option value="">Any</option>
-      <option value="Pit Bull">Pit Bull</option>
-      <option value="German Shepherd">German Shepherd</option>
-      <option value="Rottweiler">Rottweiler</option>
+      <option>Pit Bull</option>
+      <option>German Shepherd</option>
+      <option>Rottweiler</option>
     </select>
-    <button class="filter-btn" id="filterBtn">Filter pins</button>
+    <button id="filterBtn" class="btn-primary" style="margin-top:10px;">Filter pins</button>
 
-    <h3>Report a Sighting</h3>
-    <textarea id="description" placeholder="Where, what it did, any details..."></textarea>
-    <input type="text" id="latitude" placeholder="Latitude" readonly>
-    <input type="text" id="longitude" placeholder="Longitude" readonly>
-    <button id="submitReport" class="filter-btn">Submit Report</button>
+    <div class="section-title">Report a Sighting</div>
+    <textarea id="description" placeholder="Where, what it did, any details…"></textarea>
+    <input id="latitude" placeholder="Latitude (click map)" readonly />
+    <input id="longitude" placeholder="Longitude (click map)" readonly />
+    <button id="submitReport" class="btn-primary">Submit Report</button>
 
-    <div class="plan-section">
-      <div class="plan-title">Choose Your Plan</div>
-      <div class="plan-box">
-        <h2>Dog Alert Basic</h2>
-        <p>$9.99 one-time</p>
-        <button class="buy-basic" onclick="window.open('https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00','_blank')">
-          Buy Basic
-        </button>
+    <div class="plans">
+      <div class="plans-title">Choose Your Plan</div>
+      <div class="plan-row">
+        <div class="plan">
+          <h3>Dog Alert Basic</h3>
+          <div class="price">$9.99 <span style="color:#9e9e9e; font-weight:600;">one-time</span></div>
+          <p>Full app access + live hazard reports.</p>
+          <button class="btn-basic" onclick="window.open('https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00','_blank')">Buy Basic</button>
+        </div>
+        <div class="plan">
+          <h3>Dog Alert Pro</h3>
+          <div class="price">$1.99 <span style="color:#9e9e9e; font-weight:600;">/ month</span></div>
+          <p>Everything in Basic + priority features coming soon.</p>
+          <button class="btn-pro" onclick="window.open('https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0','_blank')">Subscribe Pro</button>
+        </div>
       </div>
-      <div class="plan-box">
-        <h2>Dog Alert Pro</h2>
-        <p>$1.99 / month</p>
-        <button class="sub-pro" onclick="window.open('https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0','_blank')">
-          Subscribe Pro
-        </button>
-      </div>
+      <div class="copyright">Secure checkout via Stripe. Test mode for now.<br>© 2025 TightLoop Holdings</div>
     </div>
-
-    <div class="copyright">© 2025 TightLoop Holdings</div>
   </div>
+
   <div id="map"></div>
 
   <!-- Firebase -->
@@ -153,11 +103,11 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <!-- App JS -->
-  <script src="app.js?v=19"></script>
+  <script src="app.js?v=20"></script>
 
-  <!-- Google Maps -->
+  <!-- Google Maps (YOUR real key is included) -->
   <script async
-    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&libraries=places&callback=initMap">
   </script>
 </body>
 </html>
