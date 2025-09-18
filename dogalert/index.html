@@ -1,193 +1,172 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dog Alert LIVE</title>
-<style>
-  :root { --bg:#0f1115; --panel:#151923; --text:#e8eefc; --muted:#95a1b2; --ok:#22c55e; --bad:#ef4444; --warn:#f59e0b; }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial}
-  .wrap{display:grid;grid-template-columns:320px 1fr;min-height:100vh}
-  aside{background:var(--panel);padding:16px 14px;border-right:1px solid #222835}
-  h1{margin:0 0 10px;font-size:20px}
-  .section{margin-top:14px;padding:12px;border:1px solid #232938;border-radius:10px}
-  .row{display:flex;gap:8px;align-items:center;margin:6px 0}
-  .row label{width:95px;color:var(--muted);font-size:12px}
-  input,select,textarea{width:100%;background:#0f1420;border:1px solid #232938;color:#e8eefc;border-radius:8px;padding:8px;font-size:14px}
-  textarea{height:72px;resize:vertical}
-  .btn{appearance:none;border:0;background:#ffd02a;color:#111;font-weight:700;border-radius:10px;padding:10px 12px;cursor:pointer}
-  .btn.secondary{background:#22c55e;color:#08130b}
-  .plan{background:#0b0f17;padding:12px;border-radius:12px;border:1px solid #232938;margin-top:10px}
-  .plan h3{margin:0 0 4px;font-size:15px}
-  .foot{color:var(--muted);font-size:12px;margin-top:8px}
-  #map{height:100vh;width:100%;background:#0b0d12;position:relative}
-  .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;margin:2px 6px 2px 0;background:#1f2432;color:#a7b0c2}
-  .ok{background:#0f2a1a;color:#22c55e}.bad{background:#2a1416;color:#ef4444}.warn{background:#2a2414;color:#f59e0b}
-  #overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:#fff;font-size:16px;background:rgba(0,0,0,.45);z-index:2}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dog Alert</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --panel: #161a22;
+      --text: #e7ecf3;
+      --muted: #97a2b0;
+      --accent: #ff7a00;
+      --border: #232836;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      height: 100vh; display: grid; grid-template-rows: 64px 1fr;
+    }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; background: var(--panel); border-bottom: 1px solid var(--border);
+    }
+    header .brand { display: flex; align-items: center; gap: 12px; }
+    header .brand .logo {
+      width: 28px; height: 28px; border: 2px solid var(--accent); border-radius: 6px;
+      display: grid; place-items: center; color: var(--accent); font-weight: 800;
+    }
+    header .brand h1 { font-size: 18px; margin: 0; letter-spacing: 0.4px; }
+    header .actions a {
+      color: var(--text); text-decoration: none; font-size: 14px; opacity: 0.8;
+      padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;
+    }
+    main { display: grid; grid-template-columns: 360px 1fr; min-height: 0; }
+    aside {
+      background: var(--panel); border-right: 1px solid var(--border);
+      padding: 16px; overflow: auto;
+    }
+    section { padding: 12px 0; border-bottom: 1px dashed var(--border); }
+    section:last-child { border-bottom: none; }
+    h2 { font-size: 14px; margin: 0 0 10px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.8px; }
+    label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 6px; }
+    input, select, textarea, button {
+      width: 100%; padding: 10px 12px; background: #0c0f14; color: var(--text);
+      border: 1px solid var(--border); border-radius: 10px; font-size: 14px;
+    }
+    button {
+      background: var(--accent); border: none; color: #111; font-weight: 700; cursor: pointer;
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .muted { color: var(--muted); font-size: 12px; }
+    #map { width: 100%; height: 100%; }
+    .pill {
+      display: inline-block; padding: 2px 8px; font-size: 12px; border: 1px solid var(--border);
+      border-radius: 999px; color: var(--muted);
+    }
+    .note { background: #10151e; padding: 10px; border: 1px solid var(--border); border-radius: 10px; }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <aside>
-    <h1>Dog Alert <span class="badge">LIVE</span></h1>
-
-    <!-- status -->
-    <div class="section">
-      <div class="row"><label>maps script</label><span id="stat-script" class="badge">pending…</span></div>
-      <div class="row"><label>maps init</label><span id="stat-init" class="badge">pending…</span></div>
-      <div class="row"><label>maps error</label><span id="stat-err" class="badge">–</span></div>
-      <div class="row"><label>firestore</label><span id="stat-fs" class="badge">pending…</span></div>
+  <header>
+    <div class="brand">
+      <div class="logo">!</div>
+      <h1>Dog Alert</h1>
     </div>
-
-    <div class="section">
-      <div class="row"><label>Type</label>
-        <select id="type">
-          <option>Loose</option>
-          <option>Vicious</option>
-        </select>
-      </div>
-      <div class="row"><label>Breed</label>
-        <select id="breed">
-          <option>Any</option>
-          <option>Pit Bull</option>
-          <option>Husky</option>
-          <option>German Shepherd</option>
-        </select>
-      </div>
-      <div class="row"><label>Details</label><textarea id="desc" placeholder="where, what it did, any details…"></textarea></div>
-      <div class="row"><label>Lat</label><input id="lat" placeholder="click map to fill" /></div>
-      <div class="row"><label>Lng</label><input id="lng" placeholder="click map to fill" /></div>
-      <button id="submit" class="btn">Submit Report</button>
-      <div class="foot">Click the map to fill lat/lng. New pins stream live.</div>
+    <div class="actions">
+      <span class="pill">Live</span>
     </div>
+  </header>
 
-    <div class="plan">
-      <h3>Dog Alert Basic</h3>
-      <div class="foot">$9.99 one-time</div>
-      <button class="btn" id="buyBasic">Buy Basic</button>
-    </div>
-    <div class="plan">
-      <h3>Dog Alert Pro</h3>
-      <div class="foot">$1.99 / month</div>
-      <button class="btn secondary" id="buyPro">Subscribe Pro</button>
-    </div>
+  <main>
+    <aside>
+      <section>
+        <h2>Search</h2>
+        <label for="placeSearch">Find a place</label>
+        <input id="placeSearch" placeholder="Search address, park, etc." />
+        <div class="muted" style="margin-top:8px;">Tip: Drag/zoom the map or search; click on the map to set report location.</div>
+      </section>
 
-    <div class="foot">© 2025 TightLoop Holdings</div>
-  </aside>
+      <section>
+        <h2>Filters</h2>
+        <div class="row">
+          <div>
+            <label for="typeFilter">Type</label>
+            <select id="typeFilter">
+              <option value="">All types</option>
+              <option>Aggressive</option>
+              <option>Loose</option>
+              <option>Suspicious</option>
+            </select>
+          </div>
+          <div>
+            <label for="breedFilter">Breed</label>
+            <select id="breedFilter">
+              <option value="">All breeds</option>
+              <option>Pit Bull</option>
+              <option>German Shepherd</option>
+              <option>Rottweiler</option>
+              <option>Husky</option>
+              <option>Bulldog</option>
+              <option>Labrador</option>
+              <option>Other / Unknown</option>
+            </select>
+          </div>
+        </div>
+      </section>
 
-  <main id="map">
-    <div id="overlay">Google said “no” — see left status for reason.</div>
+      <section>
+        <h2>Report a Dog</h2>
+        <form id="reportForm">
+          <label for="reportType">Type</label>
+          <select id="reportType" required>
+            <option value="">Select…</option>
+            <option>Aggressive</option>
+            <option>Loose</option>
+            <option>Suspicious</option>
+          </select>
+
+          <label for="reportBreed">Breed</label>
+          <select id="reportBreed" required>
+            <option value="">Select…</option>
+            <option>Pit Bull</option>
+            <option>German Shepherd</option>
+            <option>Rottweiler</option>
+            <option>Husky</option>
+            <option>Bulldog</option>
+            <option>Labrador</option>
+            <option>Other / Unknown</option>
+          </select>
+
+          <label for="reportDesc">Description</label>
+          <textarea id="reportDesc" rows="3" placeholder="Color, behavior, collar, direction…"></textarea>
+
+          <div class="row">
+            <div>
+              <label for="lat">Latitude</label>
+              <input id="lat" placeholder="Click map to fill" required />
+            </div>
+            <div>
+              <label for="lng">Longitude</label>
+              <input id="lng" placeholder="Click map to fill" required />
+            </div>
+          </div>
+
+          <button type="submit" style="margin-top:12px;">Post Report</button>
+          <div class="muted" style="margin-top:8px;">Location fills when you click the map. You can adjust before posting.</div>
+        </form>
+      </section>
+
+      <section>
+        <h2>Status</h2>
+        <div class="note" id="statusBox">
+          Map: <strong id="statusMap">loading…</strong><br/>
+          Firestore: <strong id="statusDb">loading…</strong><br/>
+          Live pins: <strong id="statusPins">0</strong>
+        </div>
+      </section>
+    </aside>
+
+    <div id="map"></div>
   </main>
-</div>
 
-<script type="module">
-  // ===== YOUR REAL VALUES (already filled) =====
-  const MAPS_KEY = "AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec"; // Google Maps key
-  const LINK_BASIC = "https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00";
-  const LINK_PRO   = "https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0";
-  const FB = {
-    apiKey: "AIzaSyD0MJBsX37dCTMP0pj0WMsMHR6__g_Wa-w",   // Firebase Web API key
-    authDomain: "dog-alert-39ea0.firebaseapp.com",
-    projectId: "dog-alert-39ea0",
-  };
-  // =============================================
+  <!-- Google Maps (standard markers, no advanced lib needed) -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places" defer></script>
 
-  const set = (id, cls, txt) => { const el = document.getElementById(id); el.className = `badge ${cls}`; el.textContent = txt; };
-
-  // Stripe
-  buyBasic.onclick = () => window.open(LINK_BASIC, "_blank");
-  buyPro.onclick   = () => window.open(LINK_PRO, "_blank");
-
-  // Firestore
-  let db;
-  (async () => {
-    try {
-      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-      const { getFirestore, addDoc, collection, onSnapshot, serverTimestamp } =
-        await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-      const app = initializeApp(FB);
-      db = getFirestore(app);
-      set("stat-fs","ok","ready");
-
-      submit.onclick = async () => {
-        try {
-          const type = typeEl.value, breed = breedEl.value, desc = desc.value.trim();
-          const lat = parseFloat(latEl.value), lng = parseFloat(lngEl.value);
-          if (Number.isNaN(lat) || Number.isNaN(lng)) return alert("Click the map to fill lat/lng.");
-          await addDoc(collection(db, "sightings"), { type, breed, desc, lat, lng, ts: serverTimestamp() });
-          alert("Report submitted!");
-        } catch(e){ console.error(e); alert("Firestore write failed: "+e.message); set("stat-fs","bad","write failed"); }
-      };
-
-      const typeEl = document.getElementById('type');
-      const breedEl = document.getElementById('breed');
-      const latEl = document.getElementById('lat');
-      const lngEl = document.getElementById('lng');
-
-      // stream pins
-      onSnapshot(collection(db, "sightings"), (snap) => {
-        if (window.__addServerPins) {
-          const pts = []; snap.forEach(d=>pts.push(d.data())); window.__addServerPins(pts);
-        }
-      });
-    } catch(e){ console.error(e); set("stat-fs","bad","init failed"); }
-  })();
-
-  // Google Maps loader
-  function loadGoogleMaps(){
-    return new Promise((resolve)=>{
-      const s=document.createElement('script');
-      s.src=`https://maps.googleapis.com/maps/api/js?key=${MAPS_KEY}&callback=__gm_cb`;
-      s.async=true; s.defer=true;
-      s.onerror=()=>{ set("stat-script","bad","network error"); overlay.style.display='flex'; };
-      window.__gm_cb=()=>{ set("stat-script","ok","loaded"); resolve(); };
-      window.gm_authFailure=()=>{ set("stat-err","bad","gm_authFailure"); overlay.style.display='flex'; };
-      document.head.appendChild(s);
-    });
-  }
-
-  let map, clickMarker;
-  function initMap(){
-    try{
-      map=new google.maps.Map(document.getElementById("map"),{
-        center:{lat:52.772,lng:-108.29}, zoom:14,
-        streetViewControl:false, mapTypeControl:false, fullscreenControl:true
-      });
-      set("stat-init","ok","ready");
-      map.addListener("click",(e)=>{
-        const p=e.latLng.toJSON();
-        lat.value=p.lat.toFixed(6); lng.value=p.lng.toFixed(6);
-        if(!clickMarker) clickMarker=new google.maps.Marker({position:p,map,title:"Report here"});
-        else clickMarker.setPosition(p);
-      });
-
-      const markers=[];
-      window.__addServerPins=(arr)=>{
-        markers.forEach(m=>m.setMap(null)); markers.length=0;
-        arr.forEach(p=>{
-          if(typeof p.lat==="number" && typeof p.lng==="number"){
-            const m=new google.maps.Marker({position:{lat:p.lat,lng:p.lng},map,title:`${p.type||"Sighting"} – ${p.breed||""}`});
-            markers.push(m);
-          }
-        });
-      };
-    }catch(e){ console.error(e); set("stat-init","bad","init threw"); overlay.style.display='flex'; }
-  }
-
-  // catch Google’s textual errors and show code in the badge
-  (function(){
-    const origErr=console.error.bind(console);
-    console.error=(...args)=>{ origErr(...args);
-      const s=String(args[0]||""); if(s.includes("Maps JavaScript API error")){
-        const m=s.match(/error:\s*([A-Za-z0-9_]+)/); const code=m?m[1]:"unknown";
-        set("stat-err","bad",code); overlay.style.display='flex';
-      }
-    };
-  })();
-
-  (async()=>{ await loadGoogleMaps(); if(window.google&&google.maps){ set("stat-err","badge","–"); initMap(); } else { set("stat-init","bad","no google.maps"); overlay.style.display='flex'; }})();
-</script>
+  <!-- App code -->
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
