@@ -1,70 +1,243 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
   <title>Dog Alert LIVE</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#0f0f10;--panel:#141518;--text:#e8e8ea;--muted:#a9abb3;--brand:#4ade80;--warn:#facc15;--btn:#2563eb;
+      --card:#1a1c21;--border:#2a2d34;
+    }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,Segoe UI,Roboto,Helvetica,Arial}
+    .page{display:grid;grid-template-columns:320px 1fr;height:100vh}
+    .left{background:var(--panel);padding:16px;overflow:auto;border-right:1px solid var(--border)}
+    h1{margin:0 0 12px;font-size:20px}
+    label{display:block;margin:10px 0 4px;color:var(--muted);font-size:12px}
+    input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border);background:#0c0d10;color:var(--text);border-radius:8px}
+    textarea{height:64px;resize:vertical}
+    button.primary{width:100%;margin-top:8px;background:var(--btn);border:0;color:white;padding:10px 12px;border-radius:8px;font-weight:600;cursor:pointer}
+    .section-title{margin:16px 0 8px;font-weight:700;color:#9ee1a9;font-size:14px}
+    .plans{display:grid;gap:14px;margin-top:14px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+    .card h3{margin:0 0 6px;font-size:15px}
+    .price{font-weight:800}
+    .sub{color:var(--muted);font-size:12px;margin:4px 0 10px}
+    .cta-row{display:flex;gap:8px}
+    .cta{flex:1;display:block;text-align:center;padding:10px 12px;border-radius:10px;font-weight:700;text-decoration:none}
+    .buy{background:var(--warn);color:#111}
+    .pro{background:var(--brand);color:#0b1b11}
+    .footnote{color:var(--muted);font-size:11px;margin-top:6px}
+    #map{height:100vh;width:100%;background:#000}
+    .error, .ok {margin-top:10px;padding:8px 10px;border-radius:8px;font-size:12px}
+    .error{background:#2b1517;border:1px solid #7f1d1d;color:#fecaca}
+    .ok{background:#132a18;border:1px solid #14532d;color:#bbf7d0}
+    .pill{display:inline-flex;gap:6px;align-items:center;background:#0c1116;border:1px solid var(--border);padding:6px 8px;border-radius:999px;font-size:12px;margin-top:8px}
+  </style>
 </head>
 <body>
-  <div id="sidebar">
-    <h2 style="color:lime;">Dog Alert LIVE</h2>
+  <div class="page">
+    <aside class="left">
+      <h1>Dog Alert <span style="color:#4ade80">LIVE</span></h1>
 
-    <div>
-      <label>Search</label>
-      <input type="text" id="searchBox" placeholder="Type a city and hit Enter" />
-    </div>
+      <div class="pill">status: <span id="status">connecting…</span></div>
+      <div id="msg"></div>
 
-    <div>
-      <label>Type & Breed</label>
-      <select id="type">
-        <option value="">Any</option>
-        <option value="Loose">Loose</option>
-        <option value="Vicious">Vicious</option>
-        <option value="Friendly">Friendly</option>
-      </select>
-      <select id="breed">
-        <option value="">Any</option>
-        <option value="Pit Bull">Pit Bull</option>
-        <option value="Husky">Husky</option>
-        <option value="German Shepherd">German Shepherd</option>
-      </select>
-      <button id="filterBtn">Filter pins</button>
-    </div>
+      <div style="margin-top:12px">
+        <label>Type & Breed</label>
+        <div style="display:flex;gap:8px">
+          <select id="type" style="flex:1">
+            <option value="Loose">Loose</option>
+            <option value="Vicious">Vicious</option>
+            <option value="Friendly">Friendly</option>
+          </select>
+          <select id="breed" style="flex:1">
+            <option>Any</option>
+            <option>Pit Bull</option>
+            <option>Husky</option>
+            <option>German Shepherd</option>
+            <option>Other</option>
+          </select>
+        </div>
 
-    <div>
-      <h3>Report a Sighting</h3>
-      <textarea id="desc" placeholder="Where, what it did, any details..."></textarea>
-      <input type="text" id="lat" placeholder="Latitude" readonly />
-      <input type="text" id="lng" placeholder="Longitude" readonly />
-      <button id="submitReport">Submit Report</button>
-    </div>
+        <label style="margin-top:10px">Report a Sighting</label>
+        <textarea id="desc" placeholder="where, what it did, any details…"></textarea>
 
-    <div id="plans">
-      <h3>Choose Your Plan</h3>
-      <div class="plan-card">
-        <h4>Dog Alert Basic</h4>
-        <p>$9.99 one-time</p>
-        <p>Full app access + live hazard reports.</p>
-        <a class="btn basic" href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" target="_blank">Buy Basic</a>
+        <div style="display:flex;gap:8px">
+          <input id="lat" placeholder="Latitude" />
+          <input id="lng" placeholder="Longitude" />
+        </div>
+        <button class="primary" id="submitBtn">Submit Report</button>
       </div>
-      <div class="plan-card">
-        <h4>Dog Alert Pro</h4>
-        <p>$1.99 / month</p>
-        <p>Everything in Basic + priority features coming soon.</p>
-        <a class="btn pro" href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" target="_blank">Subscribe Pro</a>
-      </div>
-    </div>
 
-    <footer>© 2025 TightLoop Holdings</footer>
+      <div class="section-title">Choose Your Plan</div>
+      <div class="plans">
+        <div class="card">
+          <h3>Dog Alert Basic</h3>
+          <div class="price">$9.99 <span class="sub">one-time</span></div>
+          <div class="sub">Full app access + live hazard reports.</div>
+          <div class="cta-row">
+            <a class="cta buy" id="buyBasic" target="_blank">Buy Basic</a>
+          </div>
+          <div class="footnote">Secure checkout via Stripe. Test mode for now.</div>
+        </div>
+
+        <div class="card">
+          <h3>Dog Alert Pro</h3>
+          <div class="price">$1.99 <span class="sub">/ month</span></div>
+          <div class="sub">Everything in Basic + priority features coming soon.</div>
+          <div class="cta-row">
+            <a class="cta pro" id="buyPro" target="_blank">Subscribe Pro</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footnote" style="margin-top:12px">© 2025 TightLoop Holdings</div>
+    </aside>
+
+    <main id="map"></main>
   </div>
 
-  <div id="map"></div>
+  <!-- Google Maps (async, proper callback) -->
+  <script>
+    // 🔴 PASTE YOUR GOOGLE MAPS KEY HERE
+    const MAPS_KEY = "YOUR_MAPS_KEY_HERE";
+    const stripeLinks = {
+      basic: "https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00",
+      pro:   "https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0"
+    };
+    document.getElementById("buyBasic").href = stripeLinks.basic;
+    document.getElementById("buyPro").href = stripeLinks.pro;
 
-  <script src="app.js"></script>
-  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=initMap"></script>
+    // load the Maps script properly
+    (function loadMaps(){
+      const s = document.createElement('script');
+      s.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_KEY}&callback=initMap&libraries=places&loading=async`;
+      s.async = true;
+      s.defer = true;
+      document.head.appendChild(s);
+    })();
+
+    let map, youDot;
+
+    window.initMap = function(){
+      const start = { lat: 52.758, lng: -108.286 };
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: start, zoom: 14, mapId: "DEMO_MAP_ID"
+      });
+
+      // “You are here” dot
+      if (navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(pos => {
+          const p = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          youDot = new google.maps.marker.AdvancedMarkerElement({
+            map, position: p, title: "You are here",
+            content: dotEl("#22c55e")
+          });
+          map.setCenter(p);
+        }, () => {/* ignore */});
+      }
+
+      setStatus("map ready", true);
+    };
+
+    function dotEl(color){
+      const el = document.createElement("div");
+      el.style.width = "12px"; el.style.height = "12px";
+      el.style.borderRadius = "50%";
+      el.style.background = color;
+      el.style.boxShadow = "0 0 0 3px rgba(34,197,94,.25)";
+      return el;
+    }
+
+    function setStatus(txt, ok){
+      const pill = document.getElementById("status"); pill.textContent = txt;
+      const msg = document.getElementById("msg");
+      msg.innerHTML = `<div class="${ok ? 'ok':'error'}">${txt}</div>`;
+    }
+  </script>
+
+  <!-- Firebase (modular v11) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    // 🔴 PASTE YOUR FIREBASE CONFIG HERE (from Console → Project settings → Web app)
+    const firebaseConfig = {
+      apiKey: "YOUR_FIREBASE_WEB_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const col = collection(db, "sightings");
+
+    // live stream pins from Firestore
+    const q = query(col, orderBy("ts","desc"));
+    onSnapshot(q, (snap) => {
+      let count = 0;
+      snap.docChanges().forEach(ch => {
+        if (ch.type === "added") {
+          const d = ch.doc.data();
+          if (window.google && window.google.maps && d.lat && d.lng){
+            new google.maps.marker.AdvancedMarkerElement({
+              map: window.map,
+              position: { lat: d.lat, lng: d.lng },
+              title: `${d.type} • ${d.breed}`,
+              content: pinEl(d.type)
+            });
+            count++;
+          }
+        }
+      });
+      if (count>0) setStatus(`loaded ${count} pin(s)`, true);
+    }, (err) => {
+      console.error("onSnapshot error:", err);
+      setStatus(`stream error: ${err.message}`, false);
+    });
+
+    function pinEl(type){
+      const c = type === "Vicious" ? "#ef4444" : type === "Friendly" ? "#3b82f6" : "#22c55e";
+      const el = document.createElement("div");
+      el.style.width="14px"; el.style.height="14px"; el.style.borderRadius="6px";
+      el.style.background=c; el.style.border="2px solid #111";
+      el.style.boxShadow="0 1px 6px rgba(0,0,0,.35)";
+      return el;
+    }
+
+    // form -> addDoc
+    document.getElementById("submitBtn").addEventListener("click", async () => {
+      const type = document.getElementById("type").value || "Loose";
+      const breed = document.getElementById("breed").value || "Any";
+      const desc = document.getElementById("desc").value || "";
+      let lat = parseFloat(document.getElementById("lat").value);
+      let lng = parseFloat(document.getElementById("lng").value);
+
+      // if lat/lng empty, try to use current map center
+      if (isNaN(lat) || isNaN(lng)) {
+        const c = window.map?.getCenter();
+        if (c){ lat = c.lat(); lng = c.lng(); }
+      }
+
+      try {
+        const docRef = await addDoc(col, {
+          type, breed, desc, lat, lng, ts: serverTimestamp()
+        });
+        setStatus(`submitted: ${docRef.id}`, true);
+        document.getElementById("desc").value = "";
+        document.getElementById("lat").value = "";
+        document.getElementById("lng").value = "";
+      } catch (e){
+        console.error("addDoc error:", e);
+        setStatus(`submit failed: ${e.message}`, false);
+        alert("Submit failed: " + e.message);
+      }
+    });
+  </script>
 </body>
 </html>
