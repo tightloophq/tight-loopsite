@@ -6,6 +6,7 @@ import {
   onSnapshot, query, orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// Your existing Firebase project (from earlier working build)
 const firebaseConfig = {
   apiKey: "AIzaSyD0MJBsX37dCTMP0pj0WMsMHR6__g_Wa-w",
   authDomain: "dog-alert-39ea0.firebaseapp.com",
@@ -24,7 +25,6 @@ const statusMap = document.getElementById("statusMap");
 const statusDb = document.getElementById("statusDb");
 const statusPins = document.getElementById("statusPins");
 
-const placeSearch = document.getElementById("placeSearch");
 const typeFilter = document.getElementById("typeFilter");
 const breedFilter = document.getElementById("breedFilter");
 
@@ -35,7 +35,7 @@ const lngInput = document.getElementById("lng");
 // ---- Map state ----
 let map;
 let infoWindow;
-let markers = new Map(); // docId -> marker
+let markers = new Map(); // docId -> { marker, data }
 
 function updateStatus(el, text, ok = true) { el.textContent = text; el.style.color = ok ? "#9be79b" : "#ff9b9b"; }
 
@@ -84,17 +84,20 @@ window.initDogAlert = function initDogAlert() {
       lngInput.value = e.latLng.lng().toFixed(6);
     });
 
-    // Places Autocomplete
-    const ac = new google.maps.places.Autocomplete(placeSearch, { fields:["geometry","name","formatted_address"] });
-    ac.addListener("place_changed", () => {
-      const place = ac.getPlace();
-      if (place?.geometry?.location) {
-        map.panTo(place.geometry.location);
-        map.setZoom(15);
-      }
-    });
+    // NEW: PlaceAutocompleteElement
+    const placeSearchEl = document.getElementById("placeSearch");
+    if (placeSearchEl) {
+      placeSearchEl.addEventListener("gmpx-placechange", () => {
+        const selected = placeSearchEl.getPlace?.();
+        // New component returns { location: { lat, lng } }
+        if (selected?.location) {
+          map.panTo(selected.location);
+          map.setZoom(15);
+        }
+      });
+    }
 
-    // start Firestore live pins after map is ready
+    // Start Firestore live pins after map is ready
     livePins();
   } catch (err) {
     console.error("Map init failed:", err);
