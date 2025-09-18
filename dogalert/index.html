@@ -2,112 +2,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dog Alert LIVE</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css">
   <style>
-    :root { --bg:#111; --panel:#1a1a1a; --muted:#bfbfbf; --accent:#0ea5e9; }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
     body {
-      margin: 0; font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg); color: #fff; display: flex; min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
     }
     #sidebar {
-      width: 300px; background: var(--bg); padding: 16px 14px; overflow-y: auto;
-      border-right: 1px solid #222;
+      width: 300px;
+      background: #000;
+      padding: 15px;
+      box-sizing: border-box;
+      overflow-y: auto;
     }
-    #map { flex: 1; height: 100vh; }
-    h1 { margin: 0 0 8px; font-size: 20px; color: #32cd32; }
-    label { display:block; font-size:12px; color: var(--muted); margin-top:10px; }
-    input, select, textarea, button {
-      width: 100%; margin-top:6px; padding:9px 10px; border-radius:6px; border:1px solid #2a2a2a;
-      background:#0f0f0f; color:#fff; font-size:14px;
+    #map {
+      flex: 1;
+      height: 100%;
     }
-    textarea { min-height: 80px; resize: vertical; }
-    .btn-primary { background:#0D6EFD; border:none; font-weight:600; cursor:pointer; }
-    .btn-primary:hover { filter: brightness(1.05); }
-    .section-title { margin: 18px 0 8px; font-size:16px; font-weight:700; }
-    /* Pricing */
-    .plans { margin-top: 18px; }
-    .plans-title { text-align:center; color:#ffd84d; font-weight:700; margin-bottom:10px; }
-    .plan-row { display:flex; gap:12px; }
-    .plan {
-      flex:1; background: var(--panel); border-radius:12px; padding:14px; box-shadow: 0 2px 8px rgba(0,0,0,.5);
+    h2 {
+      margin-top: 0;
+      color: #00ff00;
     }
-    .plan h3 { margin:0; font-size:16px; }
-    .price { margin:6px 0 8px; color:#ffd84d; font-weight:700; }
-    .plan p { margin:0 0 12px; font-size:13px; color: var(--muted); line-height:1.35; }
-    .btn-basic { background:#ffcc00; color:#111; border:none; font-weight:700; cursor:pointer; }
-    .btn-pro   { background:#2ecc71; color:#111; border:none; font-weight:700; cursor:pointer; }
-    .copyright { margin:16px 0 6px; font-size:12px; color:#8a8a8a; text-align:center; }
-    /* InfoWindow content improvements */
-    .iw {
-      color:#000; font-size:14px; max-width:240px;
+    label, p {
+      font-size: 14px;
+      margin: 6px 0 3px;
     }
-    .iw b { font-size:15px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 6px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #007bff;
+      color: #fff;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover { background: #0056b3; }
+    .plan-section {
+      margin-top: 20px;
+      padding: 10px;
+      background: #111;
+      border-radius: 8px;
+    }
+    .plans {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .plan-card {
+      background: #222;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+    .plan-card h3 {
+      margin: 0 0 8px;
+      color: #fff;
+    }
+    .plan-card p {
+      margin: 4px 0;
+      color: #ccc;
+      font-size: 14px;
+    }
+    .buy-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #000;
+    }
+    .buy-basic { background: #ffcc00; }
+    .buy-pro { background: #00cc66; color: #fff; }
   </style>
 </head>
 <body>
   <div id="sidebar">
-    <h1>Dog Alert LIVE</h1>
+    <h2>Dog Alert LIVE</h2>
 
-    <label>Search</label>
-    <input id="searchBox" placeholder="Type a city and hit Enter" />
+    <label for="search">Search</label>
+    <input type="text" id="search" placeholder="Type a city and hit Enter">
 
-    <div class="section-title">Type & Breed</div>
-    <select id="typeFilter">
-      <option value="">Any</option>
+    <label for="type">Type & Breed</label>
+    <select id="type">
+      <option value="Any">Any</option>
       <option value="Loose">Loose</option>
-      <option value="Mean">Mean</option>
       <option value="Vicious">Vicious</option>
     </select>
-    <select id="breedFilter">
-      <option value="">Any</option>
-      <option>Pit Bull</option>
-      <option>German Shepherd</option>
-      <option>Rottweiler</option>
+    <select id="breed">
+      <option value="Any">Any</option>
+      <option value="Pit Bull">Pit Bull</option>
+      <option value="German Shepherd">German Shepherd</option>
+      <option value="Rottweiler">Rottweiler</option>
+      <option value="Other">Other</option>
     </select>
-    <button id="filterBtn" class="btn-primary" style="margin-top:10px;">Filter pins</button>
+    <button id="filter">Filter pins</button>
 
-    <div class="section-title">Report a Sighting</div>
-    <textarea id="description" placeholder="Where, what it did, any details…"></textarea>
-    <input id="latitude" placeholder="Latitude (click map)" readonly />
-    <input id="longitude" placeholder="Longitude (click map)" readonly />
-    <button id="submitReport" class="btn-primary">Submit Report</button>
+    <label for="desc">Report a Sighting</label>
+    <textarea id="desc" placeholder="Where, what it did, any details..."></textarea>
+    <input type="text" id="lat" placeholder="Latitude" readonly>
+    <input type="text" id="lng" placeholder="Longitude" readonly>
+    <button id="report">Submit Report</button>
 
-    <div class="plans">
-      <div class="plans-title">Choose Your Plan</div>
-      <div class="plan-row">
-        <div class="plan">
+    <div class="plan-section">
+      <h3>Choose Your Plan</h3>
+      <div class="plans">
+        <div class="plan-card">
           <h3>Dog Alert Basic</h3>
-          <div class="price">$9.99 <span style="color:#9e9e9e; font-weight:600;">one-time</span></div>
+          <p>$9.99 one-time</p>
           <p>Full app access + live hazard reports.</p>
-          <button class="btn-basic" onclick="window.open('https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00','_blank')">Buy Basic</button>
+          <a href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" 
+             class="buy-btn buy-basic">Buy Basic</a>
         </div>
-        <div class="plan">
+        <div class="plan-card">
           <h3>Dog Alert Pro</h3>
-          <div class="price">$1.99 <span style="color:#9e9e9e; font-weight:600;">/ month</span></div>
+          <p>$1.99 / month</p>
           <p>Everything in Basic + priority features coming soon.</p>
-          <button class="btn-pro" onclick="window.open('https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0','_blank')">Subscribe Pro</button>
+          <a href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" 
+             class="buy-btn buy-pro">Subscribe Pro</a>
         </div>
       </div>
-      <div class="copyright">Secure checkout via Stripe. Test mode for now.<br>© 2025 TightLoop Holdings</div>
+      <p style="font-size:12px; color:#777; margin-top:10px;">
+        Secure checkout via Stripe. Test mode for now.
+      </p>
     </div>
+
+    <p style="font-size:12px; margin-top:20px;">© 2025 TightLoop Holdings</p>
   </div>
 
   <div id="map"></div>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-  <!-- App JS -->
-  <script src="app.js?v=20"></script>
-
-  <!-- Google Maps (YOUR real key is included) -->
+  <script src="app.js"></script>
   <script async
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&libraries=places&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_NEW_KEY_HERE&libraries=places&callback=initMap">
   </script>
 </body>
 </html>
