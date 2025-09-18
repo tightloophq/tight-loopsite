@@ -1,63 +1,34 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dog Alert</title>
+  <title>Dog Alert LIVE · Dog Alert</title>
   <style>
-    :root {
-      --bg: #0f1115;
-      --panel: #161a22;
-      --text: #e7ecf3;
-      --muted: #97a2b0;
-      --accent: #ff7a00;
-      --border: #232836;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; background: var(--bg); color: var(--text);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      height: 100vh; display: grid; grid-template-rows: 64px 1fr;
-    }
-    header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 16px; background: var(--panel); border-bottom: 1px solid var(--border);
-    }
-    header .brand { display: flex; align-items: center; gap: 12px; }
-    header .brand .logo {
-      width: 28px; height: 28px; border: 2px solid var(--accent); border-radius: 6px;
-      display: grid; place-items: center; color: var(--accent); font-weight: 800;
-    }
-    header .brand h1 { font-size: 18px; margin: 0; letter-spacing: 0.4px; }
-    header .actions a {
-      color: var(--text); text-decoration: none; font-size: 14px; opacity: 0.8;
-      padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;
-    }
-    main { display: grid; grid-template-columns: 360px 1fr; min-height: 0; }
-    aside {
-      background: var(--panel); border-right: 1px solid var(--border);
-      padding: 16px; overflow: auto;
-    }
-    section { padding: 12px 0; border-bottom: 1px dashed var(--border); }
-    section:last-child { border-bottom: none; }
-    h2 { font-size: 14px; margin: 0 0 10px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.8px; }
-    label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 6px; }
-    input, select, textarea, button {
-      width: 100%; padding: 10px 12px; background: #0c0f14; color: var(--text);
-      border: 1px solid var(--border); border-radius: 10px; font-size: 14px;
-    }
-    button {
-      background: var(--accent); border: none; color: #111; font-weight: 700; cursor: pointer;
-    }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .muted { color: var(--muted); font-size: 12px; }
-    #map { width: 100%; height: 100%; }
-    .pill {
-      display: inline-block; padding: 2px 8px; font-size: 12px; border: 1px solid var(--border);
-      border-radius: 999px; color: var(--muted);
-    }
-    .note { background: #10151e; padding: 10px; border: 1px solid var(--border); border-radius: 10px; }
+    :root { --bg:#0f1115; --panel:#161a22; --text:#e7ecf3; --muted:#97a2b0; --accent:#ff7a00; --border:#232836; }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;height:100vh;display:grid;grid-template-rows:64px 1fr}
+    header{display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--border)}
+    header .brand{display:flex;align-items:center;gap:12px}
+    header .brand .logo{width:28px;height:28px;border:2px solid var(--accent);border-radius:6px;display:grid;place-items:center;color:var(--accent);font-weight:800}
+    header .brand h1{font-size:18px;margin:0;letter-spacing:.4px}
+    header .actions .pill{display:inline-block;padding:2px 8px;font-size:12px;border:1px solid var(--border);border-radius:999px;color:var(--muted)}
+    main{display:grid;grid-template-columns:360px 1fr;min-height:0}
+    aside{background:var(--panel);border-right:1px solid var(--border);padding:16px;overflow:auto}
+    section{padding:12px 0;border-bottom:1px dashed var(--border)}
+    section:last-child{border-bottom:none}
+    h2{font-size:14px;margin:0 0 10px;text-transform:uppercase;color:var(--muted);letter-spacing:.8px}
+    label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+    input,select,textarea,button{width:100%;padding:10px 12px;background:#0c0f14;color:var(--text);border:1px solid var(--border);border-radius:10px;font-size:14px}
+    button{background:var(--accent);border:none;color:#111;font-weight:700;cursor:pointer}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .muted{color:var(--muted);font-size:12px}
+    #map{width:100%;height:100%}
+    .note{background:#10151e;padding:10px;border:1px solid var(--border);border-radius:10px}
+    .card{background:#10151e;border:1px solid var(--border);border-radius:12px;padding:12px}
+    .price h3{margin:0 0 6px}
+    .price p{margin:0 0 8px;color:var(--muted);font-size:13px;line-height:1.4}
+    .price a{display:inline-block;margin-top:6px;padding:8px 12px;border-radius:10px;border:1px solid var(--border);text-decoration:none;color:var(--text)}
   </style>
 </head>
 <body>
@@ -66,9 +37,7 @@
       <div class="logo">!</div>
       <h1>Dog Alert</h1>
     </div>
-    <div class="actions">
-      <span class="pill">Live</span>
-    </div>
+    <div class="actions"><span class="pill">Live</span></div>
   </header>
 
   <main>
@@ -158,15 +127,32 @@
           Live pins: <strong id="statusPins">0</strong>
         </div>
       </section>
+
+      <section>
+        <h2>Upgrade</h2>
+        <div class="card price">
+          <h3>Dog Alert Basic</h3>
+          <p>Support the network. Remove ads. Early access features.</p>
+          <a href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" target="_blank" rel="noopener">Buy Basic (Test)</a>
+        </div>
+        <div class="card price" style="margin-top:10px;">
+          <h3>Dog Alert Pro</h3>
+          <p>Priority alerts, advanced filters, map export, and more.</p>
+          <a href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" target="_blank" rel="noopener">Buy Pro (Test)</a>
+        </div>
+      </section>
     </aside>
 
     <div id="map"></div>
   </main>
 
-  <!-- Google Maps (standard markers, no advanced lib needed) -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places" defer></script>
-
   <!-- App code -->
   <script type="module" src="./app.js"></script>
+
+  <!-- Google Maps: use callback to guarantee init -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places&callback=initDogAlert"
+    async defer></script>
 </body>
 </html>
+
