@@ -1,5 +1,5 @@
 
-// Firestore init (already set up in your project)
+// Firestore init
 const firebaseConfig = {
   apiKey: "AIzaSyD0MJBsX37dCTMP0pj0WMsMHR6__g_Wa-w",
   authDomain: "dog-alert-39ea0.firebaseapp.com",
@@ -12,6 +12,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let map;
+let userMarker;
 
 window.initMap = function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
@@ -26,6 +27,30 @@ window.initMap = function initMap() {
       { featureType: "water", stylers: [{ color: "#000000" }] }
     ]
   });
+
+  // Show "you are here" dot
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        userMarker = new google.maps.Marker({
+          position: loc,
+          map,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: "#00ff00",
+            fillOpacity: 1,
+            strokeWeight: 1,
+            strokeColor: "#000"
+          },
+          title: "You are here"
+        });
+        map.setCenter(loc);
+      },
+      () => console.warn("Geolocation blocked")
+    );
+  }
 
   // Click to set lat/lng
   map.addListener("click", (e) => {
