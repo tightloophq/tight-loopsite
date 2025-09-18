@@ -1,87 +1,241 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dog Alert LIVE</title>
-  <link rel="stylesheet" href="styles.css?v=22" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #111;
+      color: #fff;
+      display: flex;
+      height: 100vh;
+    }
+
+    #sidebar {
+      width: 320px;
+      background-color: #1a1a1a;
+      padding: 15px;
+      overflow-y: auto;
+    }
+
+    #map {
+      flex-grow: 1;
+      height: 100%;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #00ff00;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    /* Pricing Section */
+    .pricing {
+      margin-top: 20px;
+    }
+
+    .pricing h3 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #ffcc00;
+    }
+
+    .plan {
+      background: #222;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .plan h4 {
+      margin: 5px 0;
+    }
+
+    .plan p {
+      font-size: 14px;
+      margin: 10px 0;
+      color: #bbb;
+    }
+
+    .plan button {
+      width: 80%;
+      margin: auto;
+      font-weight: bold;
+    }
+
+    .buy-btn {
+      background: #ffcc00;
+      color: black;
+    }
+    .buy-btn:hover {
+      background: #e6b800;
+    }
+
+    .sub-btn {
+      background: #00cc44;
+      color: black;
+    }
+    .sub-btn:hover {
+      background: #009933;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 12px;
+      text-align: center;
+      color: #777;
+    }
+
+    /* Map marker popups */
+    .gm-style .gm-style-iw {
+      font-size: 14px !important;
+      color: #000 !important;
+    }
+  </style>
 </head>
 <body>
-  <div id="app">
-    <aside class="sidebar">
-      <h1>Dog Alert <span class="live">LIVE</span></h1>
+  <div id="sidebar">
+    <h2>Dog Alert LIVE</h2>
 
-      <label class="lbl">Search</label>
-      <input id="search" placeholder="Type a city and hit Enter" />
+    <label>Search</label>
+    <input id="searchBox" type="text" placeholder="Type a city and hit Enter" />
 
-      <div class="hr"></div>
+    <label>Type & Breed</label>
+    <select id="filterType">
+      <option value="Any">Any</option>
+      <option value="Loose">Loose</option>
+      <option value="Vicious">Vicious</option>
+      <option value="Stray">Stray</option>
+    </select>
 
-      <label class="lbl">Type &amp; Breed</label>
-      <select id="type">
-        <option value="Any">Any</option>
-        <option value="Loose">Loose</option>
-        <option value="Vicious">Vicious</option>
-      </select>
-      <select id="breed">
-        <option value="Any">Any</option>
-        <option>Pit Bull</option>
-        <option>German Shepherd</option>
-        <option>Rottweiler</option>
-        <option>Other</option>
-      </select>
-      <button id="filterPins" class="btn">Filter pins</button>
+    <select id="filterBreed">
+      <option value="Any">Any</option>
+      <option value="Pit Bull">Pit Bull</option>
+      <option value="German Shepherd">German Shepherd</option>
+      <option value="Rottweiler">Rottweiler</option>
+      <option value="Bulldog">Bulldog</option>
+      <option value="Mixed">Mixed</option>
+    </select>
 
-      <div class="hr tiny"></div>
+    <button id="filterBtn">Filter pins</button>
 
-      <label class="lbl">Report a Sighting</label>
-      <textarea id="desc" placeholder="Where, what it did, any details..."></textarea>
-      <input id="lat" placeholder="Latitude" />
-      <input id="lng" placeholder="Longitude" />
-      <button id="report" class="btn primary">Submit Report</button>
+    <label>Report a Sighting</label>
+    <textarea id="description" placeholder="Where, what it did, any details..."></textarea>
+    <input id="lat" type="text" placeholder="Latitude" readonly />
+    <input id="lng" type="text" placeholder="Longitude" readonly />
+    <button id="submitBtn">Submit Report</button>
 
-      <div class="hr"></div>
-
-      <h2 class="plans-title">Choose Your Plan</h2>
+    <div class="pricing">
+      <h3>Choose Your Plan</h3>
 
       <div class="plan">
-        <div class="plan-head">Dog Alert Basic</div>
-        <div class="price"><b>$9.99</b> <span>one-time</span></div>
-        <p class="plan-copy">Full app access + live hazard reports.</p>
-        <a class="btn buy" href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" target="_blank" rel="noopener">Buy Basic</a>
+        <h4>Dog Alert Basic</h4>
+        <p>$9.99 one-time<br/>Full app access + live hazard reports.</p>
+        <a href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" target="_blank">
+          <button class="buy-btn">Buy Basic</button>
+        </a>
       </div>
 
       <div class="plan">
-        <div class="plan-head">Dog Alert Pro</div>
-        <div class="price"><b>$1.99</b> <span>/ month</span></div>
-        <p class="plan-copy">Everything in Basic + priority features coming soon.</p>
-        <a class="btn subscribe" href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" target="_blank" rel="noopener">Subscribe Pro</a>
+        <h4>Dog Alert Pro</h4>
+        <p>$1.99 / month<br/>Everything in Basic + priority features coming soon.</p>
+        <a href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" target="_blank">
+          <button class="sub-btn">Subscribe Pro</button>
+        </a>
       </div>
+    </div>
 
-      <div class="tiny-note">Secure checkout via Stripe. Test mode for now.</div>
-
-      <div class="legend">
-        <span class="dot you"></span> You are here &nbsp;&nbsp;
-        <span class="dot sight"></span> Reported dog hazard
-      </div>
-
-      <div class="copy">© 2025 TightLoop Holdings</div>
-    </aside>
-
-    <main id="map"></main>
+    <footer>© 2025 TightLoop Holdings</footer>
   </div>
 
-  <!-- Firebase (compat because we use the namespaced API) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <div id="map"></div>
 
-  <!-- App code -->
-  <script src="app.js?v=22"></script>
+  <script>
+    let map;
+    let userMarker;
 
-  <!-- Google Maps (async + proper callback) -->
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&libraries=places&loading=async&callback=initMap"
-    async
-    defer></script>
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 52.757, lng: -108.286 },
+        zoom: 13,
+        styles: [
+          { elementType: "geometry", stylers: [{ color: "#212121" }] },
+          { elementType: "labels.text.fill", stylers: [{ color: "#ffffff" }] }
+        ]
+      });
+
+      // "You are here" green dot
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          userMarker = new google.maps.Marker({
+            position: userPos,
+            map: map,
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 8,
+              fillColor: "#00ff00",
+              fillOpacity: 1,
+              strokeWeight: 1
+            },
+            title: "You are here"
+          });
+          map.setCenter(userPos);
+        });
+      }
+
+      // Example click listener for reports
+      map.addListener("click", (e) => {
+        document.getElementById("lat").value = e.latLng.lat().toFixed(6);
+        document.getElementById("lng").value = e.latLng.lng().toFixed(6);
+      });
+    }
+  </script>
+
+  <!-- ✅ Your real API key dropped in -->
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0MJBsX37dCTMP0pj0WMsMHR6__g_Wa-w&callback=initMap">
+  </script>
 </body>
 </html>
