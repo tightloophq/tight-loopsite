@@ -4,29 +4,28 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dog Alert LIVE (debug)</title>
+<title>Dog Alert LIVE</title>
 <style>
-  :root { --bg:#0f1115; --panel:#151923; --text:#e8eefc; --muted:#95a1b2; --ok:#22c55e; --bad:#ef4444; --warn:#f59e0b; --brand:#3b82f6; }
-  body { margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial; background:var(--bg); color:var(--text); }
-  .wrap { display:grid; grid-template-columns: 320px 1fr; min-height:100vh; }
-  aside { background:var(--panel); padding:16px 14px; border-right:1px solid #222835; }
-  h1 { margin:0 0 10px; font-size:20px; }
-  .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; margin:2px 6px 2px 0; background:#1f2432; color:var(--muted); }
-  .ok { background: #0f2a1a; color: var(--ok); }
-  .bad { background: #2a1416; color: var(--bad); }
-  .warn{ background: #2a2414; color: var(--warn); }
-  .section { margin-top:14px; padding:12px; border:1px solid #232938; border-radius:10px; }
-  .row { display:flex; gap:8px; align-items:center; margin:6px 0; }
-  .row label { width:95px; color:var(--muted); font-size:12px; }
-  .btn { appearance:none; border:0; background:#ffd02a; color:#111; font-weight:700; border-radius:10px; padding:10px 12px; cursor:pointer; }
-  .btn.secondary { background:#22c55e; color:#08130b; }
-  .foot { color:var(--muted); font-size:12px; margin-top:10px; }
-  #map { height:100vh; width:100%; background:#0b0d12; position:relative; }
-  #overlay { position:absolute; inset:0; display:none; align-items:center; justify-content:center; color:#fff; font-size:16px; background:rgba(0,0,0,.45); z-index:2; }
-  .plan { background:#0b0f17; padding:12px; border-radius:12px; border:1px solid #232938; margin-top:10px;}
-  .plan h3 { margin:0 0 4px; font-size:15px; }
-  input, select, textarea { width:100%; background:#0f1420; border:1px solid #232938; color:#e8eefc; border-radius:8px; padding:8px; font-size:14px; }
-  textarea { height:72px; resize:vertical; }
+  :root { --bg:#0f1115; --panel:#151923; --text:#e8eefc; --muted:#95a1b2; --ok:#22c55e; --bad:#ef4444; --warn:#f59e0b; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial}
+  .wrap{display:grid;grid-template-columns:320px 1fr;min-height:100vh}
+  aside{background:var(--panel);padding:16px 14px;border-right:1px solid #222835}
+  h1{margin:0 0 10px;font-size:20px}
+  .section{margin-top:14px;padding:12px;border:1px solid #232938;border-radius:10px}
+  .row{display:flex;gap:8px;align-items:center;margin:6px 0}
+  .row label{width:95px;color:var(--muted);font-size:12px}
+  input,select,textarea{width:100%;background:#0f1420;border:1px solid #232938;color:#e8eefc;border-radius:8px;padding:8px;font-size:14px}
+  textarea{height:72px;resize:vertical}
+  .btn{appearance:none;border:0;background:#ffd02a;color:#111;font-weight:700;border-radius:10px;padding:10px 12px;cursor:pointer}
+  .btn.secondary{background:#22c55e;color:#08130b}
+  .plan{background:#0b0f17;padding:12px;border-radius:12px;border:1px solid #232938;margin-top:10px}
+  .plan h3{margin:0 0 4px;font-size:15px}
+  .foot{color:var(--muted);font-size:12px;margin-top:8px}
+  #map{height:100vh;width:100%;background:#0b0d12;position:relative}
+  .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;margin:2px 6px 2px 0;background:#1f2432;color:#a7b0c2}
+  .ok{background:#0f2a1a;color:#22c55e}.bad{background:#2a1416;color:#ef4444}.warn{background:#2a2414;color:#f59e0b}
+  #overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:#fff;font-size:16px;background:rgba(0,0,0,.45);z-index:2}
 </style>
 </head>
 <body>
@@ -34,7 +33,7 @@
   <aside>
     <h1>Dog Alert <span class="badge">LIVE</span></h1>
 
-    <!-- DEBUG STATUS -->
+    <!-- status -->
     <div class="section">
       <div class="row"><label>maps script</label><span id="stat-script" class="badge">pending…</span></div>
       <div class="row"><label>maps init</label><span id="stat-init" class="badge">pending…</span></div>
@@ -42,7 +41,6 @@
       <div class="row"><label>firestore</label><span id="stat-fs" class="badge">pending…</span></div>
     </div>
 
-    <!-- REPORT FORM (kept minimal) -->
     <div class="section">
       <div class="row"><label>Type</label>
         <select id="type">
@@ -65,7 +63,6 @@
       <div class="foot">Click the map to fill lat/lng. New pins stream live.</div>
     </div>
 
-    <!-- PRICING -->
     <div class="plan">
       <h3>Dog Alert Basic</h3>
       <div class="foot">$9.99 one-time</div>
@@ -86,31 +83,24 @@
 </div>
 
 <script type="module">
-  // ======= CONFIG: paste your own keys/links here =======
-  const MAPS_KEY = "AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec"; // your maps key
-  // Your Stripe test links:
+  // ===== YOUR REAL VALUES (already filled) =====
+  const MAPS_KEY = "AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec"; // Google Maps key
   const LINK_BASIC = "https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00";
   const LINK_PRO   = "https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0";
-  // Your Firebase web config (Project settings ▸ Your apps ▸ Web app):
   const FB = {
-    apiKey: "AIzaSyD0MJBsX37dCTMP0pj0WMsMHR6__g_Wa-w", // ← your Firebase web apiKey (NOT maps)
+    apiKey: "AIzaSyD0MJBsX37dCTMP0pj0WMsMHR6__g_Wa-w",   // Firebase Web API key
     authDomain: "dog-alert-39ea0.firebaseapp.com",
     projectId: "dog-alert-39ea0",
   };
-  // ======================================================
+  // =============================================
 
-  // mini helpers
-  const set = (id, cls, txt) => {
-    const el = document.getElementById(id);
-    el.className = `badge ${cls}`;
-    el.textContent = txt;
-  };
+  const set = (id, cls, txt) => { const el = document.getElementById(id); el.className = `badge ${cls}`; el.textContent = txt; };
 
-  // Stripe buttons
-  document.getElementById('buyBasic').onclick = () => window.open(LINK_BASIC, "_blank");
-  document.getElementById('buyPro').onclick   = () => window.open(LINK_PRO, "_blank");
+  // Stripe
+  buyBasic.onclick = () => window.open(LINK_BASIC, "_blank");
+  buyPro.onclick   = () => window.open(LINK_PRO, "_blank");
 
-  // Firestore init & test
+  // Firestore
   let db;
   (async () => {
     try {
@@ -119,133 +109,85 @@
         await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
       const app = initializeApp(FB);
       db = getFirestore(app);
-      // quick read test (will create collection on first write)
       set("stat-fs","ok","ready");
-      // wire submit
-      document.getElementById('submit').onclick = async () => {
+
+      submit.onclick = async () => {
         try {
-          const type = document.getElementById('type').value;
-          const breed = document.getElementById('breed').value;
-          const desc = document.getElementById('desc').value.trim();
-          const lat = parseFloat(document.getElementById('lat').value);
-          const lng = parseFloat(document.getElementById('lng').value);
+          const type = typeEl.value, breed = breedEl.value, desc = desc.value.trim();
+          const lat = parseFloat(latEl.value), lng = parseFloat(lngEl.value);
           if (Number.isNaN(lat) || Number.isNaN(lng)) return alert("Click the map to fill lat/lng.");
           await addDoc(collection(db, "sightings"), { type, breed, desc, lat, lng, ts: serverTimestamp() });
           alert("Report submitted!");
-        } catch(e) {
-          console.error(e);
-          alert("Firestore write failed: " + e.message);
-          set("stat-fs","bad","write failed");
-        }
+        } catch(e){ console.error(e); alert("Firestore write failed: "+e.message); set("stat-fs","bad","write failed"); }
       };
 
-      // live stream
+      const typeEl = document.getElementById('type');
+      const breedEl = document.getElementById('breed');
+      const latEl = document.getElementById('lat');
+      const lngEl = document.getElementById('lng');
+
+      // stream pins
       onSnapshot(collection(db, "sightings"), (snap) => {
         if (window.__addServerPins) {
-          const pts = [];
-          snap.forEach(doc => pts.push(doc.data()));
-          window.__addServerPins(pts);
+          const pts = []; snap.forEach(d=>pts.push(d.data())); window.__addServerPins(pts);
         }
       });
-    } catch (e) {
-      console.error(e);
-      set("stat-fs","bad","init failed");
-    }
+    } catch(e){ console.error(e); set("stat-fs","bad","init failed"); }
   })();
 
-  // Google Maps loader with hard diagnostics
-  function loadGoogleMaps() {
-    return new Promise((resolve) => {
-      const s = document.createElement('script');
-      s.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_KEY}&callback=__gm_cb`;
-      s.async = true; s.defer = true;
-      s.onerror = () => {
-        set("stat-script","bad","network error");
-        document.getElementById('overlay').style.display = 'flex';
-      };
-      window.__gm_cb = () => {
-        set("stat-script","ok","loaded");
-        resolve();
-      };
-      // capture auth failures / referrer issues
-      window.gm_authFailure = () => {
-        set("stat-err","bad","gm_authFailure");
-        document.getElementById('overlay').style.display = 'flex';
-      };
+  // Google Maps loader
+  function loadGoogleMaps(){
+    return new Promise((resolve)=>{
+      const s=document.createElement('script');
+      s.src=`https://maps.googleapis.com/maps/api/js?key=${MAPS_KEY}&callback=__gm_cb`;
+      s.async=true; s.defer=true;
+      s.onerror=()=>{ set("stat-script","bad","network error"); overlay.style.display='flex'; };
+      window.__gm_cb=()=>{ set("stat-script","ok","loaded"); resolve(); };
+      window.gm_authFailure=()=>{ set("stat-err","bad","gm_authFailure"); overlay.style.display='flex'; };
       document.head.appendChild(s);
     });
   }
 
   let map, clickMarker;
-  function initMap() {
-    try {
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 52.772, lng: -108.29 }, zoom: 14,
-        mapId: "DEMO_MAP", // ok if not configured
+  function initMap(){
+    try{
+      map=new google.maps.Map(document.getElementById("map"),{
+        center:{lat:52.772,lng:-108.29}, zoom:14,
         streetViewControl:false, mapTypeControl:false, fullscreenControl:true
       });
       set("stat-init","ok","ready");
-
-      // click to fill lat/lng
-      map.addListener("click", (e) => {
-        const p = e.latLng.toJSON();
-        document.getElementById('lat').value = p.lat.toFixed(6);
-        document.getElementById('lng').value = p.lng.toFixed(6);
-        if (!clickMarker) clickMarker = new google.maps.Marker({ position:p, map, title:"Report here" });
+      map.addListener("click",(e)=>{
+        const p=e.latLng.toJSON();
+        lat.value=p.lat.toFixed(6); lng.value=p.lng.toFixed(6);
+        if(!clickMarker) clickMarker=new google.maps.Marker({position:p,map,title:"Report here"});
         else clickMarker.setPosition(p);
       });
 
-      // pins from Firestore stream
-      const serverPins = [];
-      const markers = [];
-      window.__addServerPins = (arr) => {
-        serverPins.length = 0; serverPins.push(...arr);
-        // clear & redraw
+      const markers=[];
+      window.__addServerPins=(arr)=>{
         markers.forEach(m=>m.setMap(null)); markers.length=0;
-        serverPins.forEach(p => {
-          if (typeof p.lat === "number" && typeof p.lng === "number") {
-            const m = new google.maps.Marker({
-              position: { lat: p.lat, lng: p.lng }, map,
-              title: `${p.type || "Sighting"} – ${p.breed || ""}`
-            });
+        arr.forEach(p=>{
+          if(typeof p.lat==="number" && typeof p.lng==="number"){
+            const m=new google.maps.Marker({position:{lat:p.lat,lng:p.lng},map,title:`${p.type||"Sighting"} – ${p.breed||""}`});
             markers.push(m);
           }
         });
       };
-
-    } catch (e) {
-      console.error(e);
-      set("stat-init","bad","init threw");
-      document.getElementById('overlay').style.display = 'flex';
-    }
+    }catch(e){ console.error(e); set("stat-init","bad","init threw"); overlay.style.display='flex'; }
   }
 
-  // global error hook from Google (e.g., RefererNotAllowedMapError, ApiNotActivatedMapError)
-  (function patchGoogleErrorText(){
-    const originalError = console.error.bind(console);
-    console.error = (...args) => {
-      originalError(...args);
-      const s = String(args[0] || "");
-      if (s.includes("Maps JavaScript API error")) {
-        const m = s.match(/error:\s*([A-Za-z0-9_]+)/);
-        const code = m ? m[1] : "unknown";
-        set("stat-err", "bad", code);
-        document.getElementById('overlay').style.display = 'flex';
+  // catch Google’s textual errors and show code in the badge
+  (function(){
+    const origErr=console.error.bind(console);
+    console.error=(...args)=>{ origErr(...args);
+      const s=String(args[0]||""); if(s.includes("Maps JavaScript API error")){
+        const m=s.match(/error:\s*([A-Za-z0-9_]+)/); const code=m?m[1]:"unknown";
+        set("stat-err","bad",code); overlay.style.display='flex';
       }
     };
   })();
 
-  // bootstrap
-  (async () => {
-    await loadGoogleMaps();
-    if (window.google && google.maps) {
-      set("stat-err","badge","–");
-      initMap();
-    } else {
-      set("stat-init","bad","no google.maps");
-      document.getElementById('overlay').style.display = 'flex';
-    }
-  })();
+  (async()=>{ await loadGoogleMaps(); if(window.google&&google.maps){ set("stat-err","badge","–"); initMap(); } else { set("stat-init","bad","no google.maps"); overlay.style.display='flex'; }})();
 </script>
 </body>
 </html>
