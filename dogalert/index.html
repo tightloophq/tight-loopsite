@@ -2,239 +2,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dog Alert LIVE</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"/>
-
-<style>
-  :root{--bg:#111;--panel:#1a1a1a;--card:#1f1f1f;--muted:#b5b8bf;--accent:#ffcc00;--pro:#22c55e;}
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;background:var(--bg);color:#fff;font-family:Inter,system-ui,Arial,sans-serif;
-    display:grid;grid-template-columns:320px 1fr;overflow:hidden
-  }
-  /* Sidebar */
-  #sidebar{background:#141414;padding:16px;overflow-y:auto;border-right:1px solid #232323}
-  h1{margin:0 0 8px;font-size:20px}
-  .live{color:#32cd32;font-weight:800}
-  label{display:block;margin:10px 0 6px;color:#d7dae0;font-size:12px;font-weight:600;letter-spacing:.2px}
-  input,select,textarea,button{
-    width:100%;padding:10px;border-radius:8px;border:1px solid #2b2b2b;background:#0f0f0f;color:#fff
-  }
-  textarea{min-height:72px;resize:vertical}
-  button{cursor:pointer;background:#0d6efd;border:none;font-weight:700}
-  button:hover{filter:brightness(1.05)}
-  .hr{border-top:1px solid #252525;margin:14px 0}
-
-  /* Pricing */
-  .plans-title{margin:8px 0;font-weight:800;text-align:center;color:#ffd84d}
-  .plan{
-    background:var(--card);border:1px solid #2a2a2a;border-radius:14px;padding:14px;margin-bottom:12px;
-    box-shadow:0 8px 22px rgba(0,0,0,.25)
-  }
-  .plan-head{font-weight:800;margin:0 0 6px}
-  .price{margin:4px 0 10px;color:#e7e7e7}
-  .price b{font-size:18px}
-  .price span{font-size:12px;color:#a6abb4;margin-left:6px}
-  .plan p{margin:0 0 10px;color:#c8ccd4;font-size:13px}
-  .btn.buy{background:var(--accent);color:#111}
-  .btn.subscribe{background:var(--pro);color:#0b150e}
-  .tiny-note{color:#9aa0a6;font-size:11px;text-align:center;margin-top:-2px}
-
-  .legend{margin-top:8px;color:#cfd2d7;font-size:12px}
-  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle;margin-right:6px}
-  .dot.you{background:#00ff00;border:1px solid #000}
-  .dot.sight{background:#ef4444;border:1px solid #000}
-
-  footer{margin:12px 0 0;color:#8a8f99;font-size:12px;text-align:center}
-
-  /* Map */
-  #map{height:100vh;width:100%;background:#000}
-
-  /* Beefed-up InfoWindow content */
-  .iw{
-    color:#000;background:#fff;max-width:280px;padding:10px;border-radius:10px;
-    box-shadow:0 10px 28px rgba(0,0,0,.25);font-size:14px;line-height:1.4
-  }
-  .iw b{font-size:15px}
-  .iw .meta{color:#555;font-size:12px;margin-top:4px}
-
-  /* Map load error overlay */
-  #mapError{
-    position:fixed;inset:0;background:rgba(10,10,10,.95);color:#fff;display:none;align-items:center;justify-content:center;
-    z-index:99999;padding:20px;text-align:left
-  }
-  #mapError .box{
-    max-width:680px;background:#161616;border:1px solid #2a2a2a;border-radius:12px;padding:18px
-  }
-  #mapError h3{margin:0 0 8px}
-  #mapError code{background:#0f0f0f;border:1px solid #2a2a2a;border-radius:6px;padding:2px 6px}
-  #mapError .row{margin:8px 0}
-  #mapError button{width:auto;margin-top:8px}
-</style>
+  <meta charset="UTF-8">
+  <title>Dog Alert LIVE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      height: 100vh;
+    }
+    #controls {
+      width: 300px;
+      background: #1a1a1a;
+      padding: 15px;
+      overflow-y: auto;
+    }
+    #map {
+      flex: 1;
+      height: 100%;
+    }
+    h2 {
+      color: limegreen;
+      margin-top: 0;
+    }
+    label {
+      display: block;
+      margin: 8px 0 4px;
+      font-size: 14px;
+    }
+    select, input, textarea {
+      width: 100%;
+      padding: 6px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 4px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      background: #007bff;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .pricing {
+      margin-top: 20px;
+      padding: 15px;
+      background: #0d0d0d;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .plan {
+      background: #222;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+    }
+    .plan h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+    .price {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .buy-btn {
+      display: inline-block;
+      padding: 10px 15px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .basic {
+      background: gold;
+      color: black;
+    }
+    .pro {
+      background: limegreen;
+      color: black;
+    }
+    footer {
+      margin-top: 15px;
+      font-size: 12px;
+      text-align: center;
+      color: gray;
+    }
+  </style>
 </head>
 <body>
-  <div id="sidebar">
-    <h1>Dog Alert <span class="live">LIVE</span></h1>
-
+  <div id="controls">
+    <h2>Dog Alert LIVE</h2>
     <label>Search</label>
-    <input id="searchBox" placeholder="Type a city and hit Enter"/>
-
-    <div class="hr"></div>
+    <input type="text" id="searchBox" placeholder="Type a city and hit Enter">
 
     <label>Type & Breed</label>
-    <select id="typeSel">
+    <select id="typeFilter">
       <option value="Any">Any</option>
       <option value="Loose">Loose</option>
       <option value="Vicious">Vicious</option>
     </select>
-    <select id="breedSel">
+    <select id="breedFilter">
       <option value="Any">Any</option>
       <option>Pit Bull</option>
       <option>German Shepherd</option>
       <option>Rottweiler</option>
-      <option>Mixed</option>
+      <option>Bulldog</option>
+      <option>Labrador</option>
+      <option>Husky</option>
     </select>
-    <button id="filterBtn">Filter pins</button>
-
-    <div class="hr"></div>
+    <button onclick="filterPins()">Filter pins</button>
 
     <label>Report a Sighting</label>
-    <textarea id="desc" placeholder="Where, what it did, any details…"></textarea>
-    <input id="lat" placeholder="Latitude" readonly/>
-    <input id="lng" placeholder="Longitude" readonly/>
-    <button id="submitBtn">Submit Report</button>
+    <textarea id="description" placeholder="Where, what it did, any details..."></textarea>
+    <input type="text" id="lat" placeholder="Latitude" readonly>
+    <input type="text" id="lng" placeholder="Longitude" readonly>
+    <button onclick="submitReport()">Submit Report</button>
 
-    <div class="hr"></div>
-
-    <h2 class="plans-title">Choose Your Plan</h2>
-
-    <div class="plan">
-      <div class="plan-head">Dog Alert Basic</div>
-      <div class="price"><b>$9.99</b><span>one-time</span></div>
-      <p>Full app access + live hazard reports.</p>
-      <a class="btn buy" href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" target="_blank" rel="noopener">Buy Basic</a>
+    <div class="pricing">
+      <h3>Choose Your Plan</h3>
+      <div class="plan">
+        <h3>Dog Alert Basic</h3>
+        <div class="price">$9.99 one-time</div>
+        <p>Full app access + live hazard reports.</p>
+        <a href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" class="buy-btn basic">Buy Basic</a>
+      </div>
+      <div class="plan">
+        <h3>Dog Alert Pro</h3>
+        <div class="price">$1.99 / month</div>
+        <p>Everything in Basic + priority features coming soon.</p>
+        <a href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" class="buy-btn pro">Subscribe Pro</a>
+      </div>
+      <footer>© 2025 TightLoop Holdings</footer>
     </div>
-
-    <div class="plan">
-      <div class="plan-head">Dog Alert Pro</div>
-      <div class="price"><b>$1.99</b><span>/ month</span></div>
-      <p>Everything in Basic + priority features coming soon.</p>
-      <a class="btn subscribe" href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" target="_blank" rel="noopener">Subscribe Pro</a>
-    </div>
-
-    <div class="tiny-note">Secure checkout via Stripe. Test mode for now.</div>
-
-    <div class="legend"><span class="dot you"></span> You are here &nbsp;&nbsp; <span class="dot sight"></span> Reported dog hazard</div>
-
-    <footer>© 2025 TightLoop Holdings</footer>
   </div>
 
   <div id="map"></div>
 
-  <!-- Map Load Error Overlay -->
-  <div id="mapError">
-    <div class="box">
-      <h3>Google Maps didn’t load.</h3>
-      <div class="row">This usually means the API key is restricted or the Maps JavaScript API isn’t enabled.</div>
-      <div class="row"><b>Quick fix:</b></div>
-      <div class="row">1) In Google Cloud → <b>APIs & Services → Credentials → this key</b></div>
-      <div class="row">• Application restrictions → <b>HTTP referrers</b> and add:<br/>
-        <code>https://tightloophq.github.io/*</code><br/>
-        <code>https://*.github.io/*</code>
-      </div>
-      <div class="row">• API restrictions → <b>Restrict key</b> → enable <b>Maps JavaScript API</b> (and <b>Places API</b> if you use search)</div>
-      <div class="row">2) Wait ~2 minutes, then reload this page.</div>
-      <button onclick="location.reload()">Reload</button>
-    </div>
-  </div>
-
-  <!-- Firebase (compat) if you later wire Firestore; safe to leave in now -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
   <script>
-    // Minimal Firebase init (doesn't break if not used yet)
-    try {
-      const firebaseConfig = {
-        apiKey: "AIzaSyD0MJBsX37dCTMP0pj0WMsMHR6__g_Wa-w",
-        authDomain: "dog-alert-39ea0.firebaseapp.com",
-        projectId: "dog-alert-39ea0"
-      };
-      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    } catch(e){ console.warn('Firebase init skipped', e); }
-
-    let map, youMarker, mapErrorTimer;
-
-    // Beefed-up InfoWindow content helper
-    function infoHtml({type='Unknown', breed='Unknown', desc='', when=''}) {
-      return `
-        <div class="iw">
-          <b>${type}</b> — ${breed}<br/>
-          ${desc ? `<div>${escapeHtml(desc)}</div>` : ``}
-          ${when ? `<div class="meta">${when}</div>` : ``}
-        </div>
-      `;
-    }
-    function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));}
-
-    // Global callback for Google
-    window.initMap = function initMap() {
-      // Clear any “map failed” timer
-      if (mapErrorTimer) clearTimeout(mapErrorTimer);
-      document.getElementById('mapError').style.display = 'none';
-
-      map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: 52.757, lng: -108.286 },
+    let map, userMarker;
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 52.7575, lng: -108.2867 },
         zoom: 13,
-        styles: [{featureType:"poi",stylers:[{visibility:"off"}]}]
       });
 
-      // “You are here” green dot
+      // Try to show user location
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(pos => {
-          const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-          youMarker = new google.maps.Marker({
-            position: loc, map,
-            icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "#00ff00", fillOpacity: 1, strokeWeight: 1, strokeColor:"#000" },
-            title: "You are here"
+          const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          userMarker = new google.maps.Marker({
+            position: userPos,
+            map,
+            title: "You are here",
+            icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "lime", fillOpacity: 1, strokeWeight: 2 }
           });
-          map.setCenter(loc);
-        }, ()=>{/* ignore */});
+          map.setCenter(userPos);
+        });
       }
+    }
 
-      // Click to fill lat/lng for report
-      map.addListener('click', e => {
-        document.getElementById('lat').value = e.latLng.lat().toFixed(6);
-        document.getElementById('lng').value = e.latLng.lng().toFixed(6);
-
-        // Demo marker with beefy InfoWindow (you can remove this demo if Firestore adds real pins)
-        const demo = new google.maps.Marker({ position:e.latLng, map, icon:{
-          path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW, scale: 4,
-          fillColor: "#ef4444", fillOpacity: 1, strokeWeight: 1, strokeColor: "#000"
-        }});
-        const iw = new google.maps.InfoWindow({ content: infoHtml({
-          type: document.getElementById('typeSel').value || 'Loose',
-          breed: document.getElementById('breedSel').value || 'Unknown',
-          desc: document.getElementById('desc').value || 'Test pin',
-          when: new Date().toLocaleString()
-        })});
-        demo.addListener('click', ()=> iw.open(map, demo));
-      });
-    };
-
-    // If Google fails to call initMap, show the overlay after 4s
-    mapErrorTimer = setTimeout(()=>{
-      const ok = window.google && google.maps && document.querySelector('#map').children.length>0;
-      if (!ok) document.getElementById('mapError').style.display='flex';
-    }, 4000);
+    function filterPins() {
+      alert("Filtering pins not yet wired in this demo.");
+    }
+    function submitReport() {
+      alert("Report submitted!");
+    }
   </script>
 
-  <!-- ✅ Google Maps with your key -->
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0MJBsX37dCTMP0pj0WMsMHR6__g_Wa-w&loading=async&callback=initMap"
-    async defer></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=initMap"></script>
 </body>
 </html>
