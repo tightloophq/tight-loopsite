@@ -6,7 +6,6 @@ import {
   onSnapshot, query, orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Eric's config (from your working project)
 const firebaseConfig = {
   apiKey: "AIzaSyD0MJBsX37dCTMP0pj0WMsMHR6__g_Wa-w",
   authDomain: "dog-alert-39ea0.firebaseapp.com",
@@ -38,11 +37,7 @@ let map;
 let infoWindow;
 let markers = new Map(); // docId -> marker
 
-// ---- Utilities ----
-function updateStatus(el, text, ok = true) {
-  el.textContent = text;
-  el.style.color = ok ? "#9be79b" : "#ff9b9b";
-}
+function updateStatus(el, text, ok = true) { el.textContent = text; el.style.color = ok ? "#9be79b" : "#ff9b9b"; }
 
 function applyFilters(docData) {
   const t = typeFilter.value;
@@ -64,39 +59,33 @@ function createInfoHtml(d) {
   `;
 }
 
-// ---- Map init ----
-window.initDogAlert = async function initDogAlert() {
+// ---- Map init (called by Google via callback param) ----
+window.initDogAlert = function initDogAlert() {
   try {
     const defaultCenter = { lat: 51.0486, lng: -114.0708 }; // Calgary fallback
     map = new google.maps.Map(document.getElementById("map"), {
-      center: defaultCenter,
-      zoom: 12,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false,
-      clickableIcons: false,
+      center: defaultCenter, zoom: 12,
+      mapTypeControl:false, streetViewControl:false, fullscreenControl:false, clickableIcons:false,
     });
     infoWindow = new google.maps.InfoWindow();
     updateStatus(statusMap, "ready ✅");
 
-    // Geolocate user (best-effort)
+    // Geolocate (best-effort)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => map.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        () => {} // ignore errors silently
+        () => {}
       );
     }
 
-    // Place click -> populate lat/lng
+    // Map click -> populate lat/lng
     map.addListener("click", (e) => {
       latInput.value = e.latLng.lat().toFixed(6);
       lngInput.value = e.latLng.lng().toFixed(6);
     });
 
     // Places Autocomplete
-    const ac = new google.maps.places.Autocomplete(placeSearch, {
-      fields: ["geometry", "name", "formatted_address"]
-    });
+    const ac = new google.maps.places.Autocomplete(placeSearch, { fields:["geometry","name","formatted_address"] });
     ac.addListener("place_changed", () => {
       const place = ac.getPlace();
       if (place?.geometry?.location) {
@@ -104,16 +93,18 @@ window.initDogAlert = async function initDogAlert() {
         map.setZoom(15);
       }
     });
+
+    // start Firestore live pins after map is ready
+    livePins();
   } catch (err) {
     console.error("Map init failed:", err);
     updateStatus(statusMap, "failed ❌", false);
   }
 };
 
-// Bind filters to redraw
+// Filters re-apply visibility
 [typeFilter, breedFilter].forEach(el => {
   el.addEventListener("change", () => {
-    // Just toggle visibility of existing markers
     let visibleCount = 0;
     markers.forEach(({ data, marker }) => {
       const show = applyFilters(data);
@@ -125,7 +116,7 @@ window.initDogAlert = async function initDogAlert() {
 });
 
 // ---- Firestore live pins ----
-async function livePins() {
+function livePins() {
   try {
     const q = query(collection(db, "reports"), orderBy("createdAt", "desc"));
     onSnapshot(q, (snap) => {
@@ -133,17 +124,16 @@ async function livePins() {
       snap.docChanges().forEach((ch) => {
         const id = ch.doc.id;
         const d = ch.doc.data();
+        if (!d) return;
+
         if (ch.type === "removed") {
           const found = markers.get(id);
-          if (found) {
-            found.marker.setMap(null);
-            markers.delete(id);
-          }
+          if (found) { found.marker.setMap(null); markers.delete(id); }
           return;
         }
-        // added or modified
+
         const pos = { lat: d.lat, lng: d.lng };
-        if (!pos.lat || !pos.lng) return;
+        if (typeof pos.lat !== "number" || typeof pos.lng !== "number") return;
 
         const show = applyFilters(d);
         const html = createInfoHtml(d);
@@ -153,17 +143,11 @@ async function livePins() {
             position: pos, map: show ? map : null,
             title: `${d.type || "Report"}: ${d.breed || "Unknown"}`
           });
-          marker.addListener("click", () => {
-            infoWindow.setContent(html);
-            infoWindow.open({ map, anchor: marker });
-          });
+          marker.addListener("click", () => { infoWindow.setContent(html); infoWindow.open({ map, anchor: marker }); });
           markers.set(id, { marker, data: d });
-        } else if (ch.type === "modified") {
+        } else {
           const found = markers.get(id);
-          if (found) {
-            found.data = d;
-            found.marker.setPosition(pos);
-          }
+          if (found) { found.data = d; found.marker.setPosition(pos); }
         }
       });
 
@@ -200,25 +184,10 @@ form.addEventListener("submit", async (e) => {
   }
 
   try {
-    await addDoc(collection(db, "reports"), {
-      type, breed, desc, lat, lng, createdAt: serverTimestamp()
-    });
+    await addDoc(collection(db, "reports"), { type, breed, desc, lat, lng, createdAt: serverTimestamp() });
     form.reset();
   } catch (err) {
     console.error("Add report failed:", err);
     alert("Could not post report. Check console for details.");
   }
 });
-
-// ---- Boot ----
-(function waitForMapsThenInit() {
-  const check = () => {
-    if (window.google && window.google.maps) {
-      window.initDogAlert();
-      livePins();
-    } else {
-      setTimeout(check, 100);
-    }
-  };
-  check();
-})();
