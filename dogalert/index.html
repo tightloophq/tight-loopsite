@@ -3,22 +3,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dog Alert</title>
   <style>
-    body{margin:0;display:grid;grid-template-columns:320px 1fr;height:100vh;font-family:Arial,system-ui;background:#111;color:#eee}
-    aside{background:#1e1e1e;padding:15px;overflow:auto}
-    h1{font-size:20px;margin:0 0 10px}
-    label{display:block;margin-top:10px}
-    input,select,textarea,button{width:100%;padding:6px;margin-top:4px;border-radius:6px;border:1px solid #333;background:#222;color:#eee}
-    small{color:#a9a9a9}
-    button{background:#1976d2;border:none;color:#fff;cursor:pointer}
-    button:hover{background:#1565c0}
+    /* Layout */
+    body{margin:0;display:grid;grid-template-columns:320px 1fr;height:100vh;background:#111;color:#eee;font-family:Arial,system-ui}
+    aside{background:#1e1e1e;padding:16px;overflow:auto;border-right:1px solid #2a2a2a}
     #map{width:100%;height:100%}
+
+    /* Controls */
+    h1{margin:0 0 10px;font-size:20px}
+    label{display:block;margin-top:10px}
+    input,select,textarea,button,a.btn{
+      width:100%;padding:8px;margin-top:4px;border-radius:8px;border:1px solid #333;background:#222;color:#eee;
+      text-decoration:none;box-sizing:border-box
+    }
+    button{border:none;background:#1976d2;cursor:pointer;font-weight:700}
+    button:hover{background:#1565c0}
+    small{color:#a9a9a9}
     .row{display:flex;gap:8px}
-    footer{margin-top:18px;color:#9aa; font-size:12px}
-    .dot{width:10px;height:10px;background:#29f66f;border-radius:50%;display:inline-block;margin-right:6px}
-    .bar{display:flex;align-items:center;gap:8px;margin-top:10px}
+    .row>div{flex:1}
+
+    /* Pricing cards */
+    .plans{margin-top:18px;padding:12px;border:1px solid #2a2a2a;border-radius:12px;background:#161922}
+    .plans h2{margin:0 0 8px;font-size:18px;text-align:center}
+    .plan-cards{display:grid;gap:10px}
+    @media(min-width:760px){.plan-cards{grid-template-columns:1fr 1fr}}
+    .plan{background:#141823;border:1px solid #1e2433;border-radius:12px;padding:14px}
+    .plan h3{margin:0 0 6px}
+    .price{font-size:22px;font-weight:800;margin:4px 0}
+    .price span{font-size:12px;opacity:.8;margin-left:6px}
+    a.btn.basic{background:#ffcc00;color:#111;border:none;text-align:center;font-weight:800}
+    a.btn.basic:hover{background:#e6b800}
+    a.btn.pro{background:#22c55e;color:#0a120b;border:none;text-align:center;font-weight:800}
+    a.btn.pro:hover{background:#1da34e}
+    .note{text-align:center;font-size:12px;opacity:.7;margin-top:8px}
+
+    footer{margin-top:16px;color:#9aa;font-size:12px;text-align:center}
   </style>
 </head>
 <body>
@@ -30,8 +51,8 @@
     <input id="search" placeholder="Type a city and hit Enter" />
     <small>Tip: type a city and hit Enter.</small>
 
-    <!-- One set only: these power BOTH reporting and filtering -->
-    <h3 style="margin-top:16px">Type & Breed</h3>
+    <!-- One set only: used for filtering AND reporting -->
+    <h3 style="margin:14px 0 6px;">Type & Breed</h3>
     <label>Type</label>
     <select id="type">
       <option value="">Any</option>
@@ -50,47 +71,63 @@
       <option>Unknown</option>
     </select>
 
-    <div class="bar">
-      <button id="apply">Filter pins</button>
-      <small>Filters use the Type/Breed above</small>
-    </div>
+    <button id="apply" style="margin-top:8px;">Filter pins</button>
 
     <!-- Report -->
-    <h3 style="margin-top:16px">Report a Sighting</h3>
+    <h3 style="margin:16px 0 6px;">Report a Sighting</h3>
     <label>Description</label>
     <textarea id="desc" rows="3" placeholder="Where, what it did, any details…"></textarea>
 
-    <div class="row">
-      <div style="flex:1">
+    <div class="row" style="margin-top:6px;">
+      <div>
         <label>Latitude</label>
-        <input id="lat" placeholder="click map" />
+        <input id="lat" placeholder="click map"/>
       </div>
-      <div style="flex:1">
+      <div>
         <label>Longitude</label>
-        <input id="lng" placeholder="click map" />
+        <input id="lng" placeholder="click map"/>
       </div>
     </div>
 
-    <button id="submit" style="margin-top:10px">Submit Report</button>
+    <button id="submit" style="margin-top:10px;">Submit Report</button>
 
-    <h3 style="margin-top:18px">How it works</h3>
-    <p>Pins stream in live from Firestore. Use search to move the map. Click the map to fill lat/lng. Click a pin for details.</p>
-
-    <div class="bar"><span class="dot"></span><small>This green dot is your location.</small></div>
+    <!-- Pricing / Checkout -->
+    <section class="plans" id="plans">
+      <h2>Choose Your Plan</h2>
+      <div class="plan-cards">
+        <div class="plan">
+          <h3>Dog Alert Basic</h3>
+          <p class="price">$9.99 <span>one-time</span></p>
+          <p>Full app access + live hazard reports.</p>
+          <a class="btn basic" target="_blank" rel="noopener"
+             href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00">🐶 Buy Basic</a>
+        </div>
+        <div class="plan">
+          <h3>Dog Alert Pro</h3>
+          <p class="price">$1.99 <span>/ month</span></p>
+          <p>Everything in Basic + priority features coming soon.</p>
+          <a class="btn pro" target="_blank" rel="noopener"
+             href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0">🚨 Subscribe Pro</a>
+        </div>
+      </div>
+      <p class="note">Secure checkout via Stripe. Test mode for now.</p>
+    </section>
 
     <footer>© 2025 TightLoop Holdings</footer>
   </aside>
 
   <main id="map"></main>
 
-  <!-- Firebase SDKs -->
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <!-- Firebase SDKs (load BEFORE app.js) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-  <!-- App code -->
-  <script defer src="./app.js?v=2"></script>
+  <!-- Your app code (defines window._dogalertInit) -->
+  <script src="./app.js?v=3"></script>
 
-  <!-- Google Maps (your key + our callback) -->
-  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=_dogalertInit&libraries=places"></script>
+  <!-- Google Maps (calls _dogalertInit when ready) -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=_dogalertInit&libraries=places"
+    async defer></script>
 </body>
 </html>
