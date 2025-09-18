@@ -2,181 +2,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dog Alert LIVE</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-      display: flex;
-      height: 100vh;
-    }
-    #controls {
-      width: 300px;
-      background: #1a1a1a;
-      padding: 15px;
-      overflow-y: auto;
-    }
-    #map {
-      flex: 1;
-      height: 100%;
-    }
-    h2 {
-      color: limegreen;
-      margin-top: 0;
-    }
-    label {
-      display: block;
-      margin: 8px 0 4px;
-      font-size: 14px;
-    }
-    select, input, textarea {
-      width: 100%;
-      padding: 6px;
-      margin-bottom: 10px;
-      border: none;
-      border-radius: 4px;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 4px;
-      background: #007bff;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    .pricing {
-      margin-top: 20px;
-      padding: 15px;
-      background: #0d0d0d;
-      border-radius: 8px;
-      text-align: center;
-    }
-    .plan {
-      background: #222;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-    }
-    .plan h3 {
-      margin: 0 0 10px;
-      font-size: 18px;
-    }
-    .price {
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-    .buy-btn {
-      display: inline-block;
-      padding: 10px 15px;
-      border-radius: 4px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .basic {
-      background: gold;
-      color: black;
-    }
-    .pro {
-      background: limegreen;
-      color: black;
-    }
-    footer {
-      margin-top: 15px;
-      font-size: 12px;
-      text-align: center;
-      color: gray;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
 </head>
 <body>
-  <div id="controls">
-    <h2>Dog Alert LIVE</h2>
-    <label>Search</label>
-    <input type="text" id="searchBox" placeholder="Type a city and hit Enter">
+  <div id="sidebar">
+    <h2 style="color:lime;">Dog Alert LIVE</h2>
 
-    <label>Type & Breed</label>
-    <select id="typeFilter">
-      <option value="Any">Any</option>
-      <option value="Loose">Loose</option>
-      <option value="Vicious">Vicious</option>
-    </select>
-    <select id="breedFilter">
-      <option value="Any">Any</option>
-      <option>Pit Bull</option>
-      <option>German Shepherd</option>
-      <option>Rottweiler</option>
-      <option>Bulldog</option>
-      <option>Labrador</option>
-      <option>Husky</option>
-    </select>
-    <button onclick="filterPins()">Filter pins</button>
-
-    <label>Report a Sighting</label>
-    <textarea id="description" placeholder="Where, what it did, any details..."></textarea>
-    <input type="text" id="lat" placeholder="Latitude" readonly>
-    <input type="text" id="lng" placeholder="Longitude" readonly>
-    <button onclick="submitReport()">Submit Report</button>
-
-    <div class="pricing">
-      <h3>Choose Your Plan</h3>
-      <div class="plan">
-        <h3>Dog Alert Basic</h3>
-        <div class="price">$9.99 one-time</div>
-        <p>Full app access + live hazard reports.</p>
-        <a href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" class="buy-btn basic">Buy Basic</a>
-      </div>
-      <div class="plan">
-        <h3>Dog Alert Pro</h3>
-        <div class="price">$1.99 / month</div>
-        <p>Everything in Basic + priority features coming soon.</p>
-        <a href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" class="buy-btn pro">Subscribe Pro</a>
-      </div>
-      <footer>© 2025 TightLoop Holdings</footer>
+    <div>
+      <label>Search</label>
+      <input type="text" id="searchBox" placeholder="Type a city and hit Enter" />
     </div>
+
+    <div>
+      <label>Type & Breed</label>
+      <select id="type">
+        <option value="">Any</option>
+        <option value="Loose">Loose</option>
+        <option value="Vicious">Vicious</option>
+        <option value="Friendly">Friendly</option>
+      </select>
+      <select id="breed">
+        <option value="">Any</option>
+        <option value="Pit Bull">Pit Bull</option>
+        <option value="Husky">Husky</option>
+        <option value="German Shepherd">German Shepherd</option>
+      </select>
+      <button id="filterBtn">Filter pins</button>
+    </div>
+
+    <div>
+      <h3>Report a Sighting</h3>
+      <textarea id="desc" placeholder="Where, what it did, any details..."></textarea>
+      <input type="text" id="lat" placeholder="Latitude" readonly />
+      <input type="text" id="lng" placeholder="Longitude" readonly />
+      <button id="submitReport">Submit Report</button>
+    </div>
+
+    <div id="plans">
+      <h3>Choose Your Plan</h3>
+      <div class="plan-card">
+        <h4>Dog Alert Basic</h4>
+        <p>$9.99 one-time</p>
+        <p>Full app access + live hazard reports.</p>
+        <a class="btn basic" href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" target="_blank">Buy Basic</a>
+      </div>
+      <div class="plan-card">
+        <h4>Dog Alert Pro</h4>
+        <p>$1.99 / month</p>
+        <p>Everything in Basic + priority features coming soon.</p>
+        <a class="btn pro" href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" target="_blank">Subscribe Pro</a>
+      </div>
+    </div>
+
+    <footer>© 2025 TightLoop Holdings</footer>
   </div>
 
   <div id="map"></div>
 
-  <script>
-    let map, userMarker;
-    function initMap() {
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 52.7575, lng: -108.2867 },
-        zoom: 13,
-      });
-
-      // Try to show user location
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-          userMarker = new google.maps.Marker({
-            position: userPos,
-            map,
-            title: "You are here",
-            icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "lime", fillOpacity: 1, strokeWeight: 2 }
-          });
-          map.setCenter(userPos);
-        });
-      }
-    }
-
-    function filterPins() {
-      alert("Filtering pins not yet wired in this demo.");
-    }
-    function submitReport() {
-      alert("Report submitted!");
-    }
-  </script>
-
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=initMap"></script>
+  <script src="app.js"></script>
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=initMap"></script>
 </body>
 </html>
