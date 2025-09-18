@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,6 +30,8 @@
     .price h3{margin:0 0 6px}
     .price p{margin:0 0 8px;color:var(--muted);font-size:13px;line-height:1.4}
     .price a{display:inline-block;margin-top:6px;padding:8px 12px;border-radius:10px;border:1px solid var(--border);text-decoration:none;color:var(--text)}
+    /* new element default width fix */
+    gmpx-place-autocomplete{display:block}
   </style>
 </head>
 <body>
@@ -45,7 +48,8 @@
       <section>
         <h2>Search</h2>
         <label for="placeSearch">Find a place</label>
-        <input id="placeSearch" placeholder="Search address, park, etc." />
+        <!-- NEW: Google Places Autocomplete web component -->
+        <gmpx-place-autocomplete id="placeSearch" placeholder="Search address, park, etc."></gmpx-place-autocomplete>
         <div class="muted" style="margin-top:8px;">Tip: Drag/zoom the map or search; click on the map to set report location.</div>
       </section>
 
@@ -149,10 +153,12 @@
   <!-- App code -->
   <script type="module" src="./app.js"></script>
 
-  <!-- Google Maps: use callback to guarantee init -->
+  <!-- Extended component library (needed for PlaceAutocompleteElement) -->
+  <script src="https://unpkg.com/@googlemaps/extended-component-library"></script>
+
+  <!-- Google Maps JS: use your real key -->
   <script
-    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places&callback=initDogAlert"
+    src="https://maps.googleapis.com/maps/api/js?key=REPLACE_WITH_YOUR_KEY&libraries=places&callback=initDogAlert&loading=async"
     async defer></script>
 </body>
 </html>
-
