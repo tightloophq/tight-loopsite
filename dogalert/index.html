@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dog Alert LIVE · Dog Alert</title>
 
-  <!-- tiny inline favicon to avoid 404 -->
+  <!-- tiny inline favicon to prevent /favicon.ico 404 -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='12' ry='12' fill='%23ff7a00'/%3E%3Ctext x='50' y='62' font-size='64' text-anchor='middle' fill='white'%3E!%3C/text%3E%3C/svg%3E" />
 
   <style>
@@ -131,16 +132,15 @@
     <div id="map"></div>
   </main>
 
-  <!-- your app code (same folder as index.html) -->
+  <!-- app code (must load BEFORE Google callback runs) -->
   <script type="module" src="./app.js"></script>
 
-  <!-- Place Autocomplete web component (must be a module) -->
+  <!-- Place Autocomplete web component (module) -->
   <script type="module" src="https://unpkg.com/@googlemaps/extended-component-library"></script>
 
-  <!-- Maps JS (key baked in) -->
+  <!-- Google Maps (calls window.initDogAlert when ready) -->
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&libraries=places&callback=initDogAlert&loading=async"
     async defer></script>
 </body>
 </html>
-
