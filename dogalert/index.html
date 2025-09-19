@@ -22,7 +22,7 @@
     .upgrade h3 { margin:0 0 10px; }
     .upgrade a { display:inline-block; margin-top:8px; padding:8px 12px; border-radius:4px; text-decoration:none; font-weight:800; }
     .btn-basic { background:#4aa8ff; color:#000; }
-    .btn-pro { background:#16c784; color:#000; }
+    .btn-pro   { background:#16c784; color:#000; }
   </style>
 </head>
 <body>
@@ -82,20 +82,27 @@
       projectId: "dog-alert-39ea0",
       storageBucket: "dog-alert-39ea0.appspot.com",
       messagingSenderId: "569616949041",
-      appId: "1:569616949041:web:5c9d94b2002ada585fda10",
+      appId: "1:569616949041:web:5c9d94b2002ada585fda10"
     };
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const db  = getFirestore(app);
 
-    let map, tempMarker = null, userMarker = null, markers = [];
-    const setStatus = (id, t) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = t;
-    };
+    // Helpers
+    function setStatus(id, text) {
+      var el = document.getElementById(id);
+      if (el) { el.textContent = text; }
+    }
 
-    // Expose callback for Google Maps
+    // Globals
+    var map = null;
+    var tempMarker = null;
+    var userMarker = null;
+    var markers = [];
+
+    // Expose init for Google Maps callback
     window.initMap = function () {
-      map = new google.maps.Map(document.getElementById("map"), {
+      var mapEl = document.getElementById("map");
+      map = new google.maps.Map(mapEl, {
         center: { lat: 52.7575, lng: -108.2861 },
         zoom: 13
       });
@@ -103,78 +110,97 @@
 
       // GPS green dot
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((pos) => {
-          const lat = pos.coords.latitude, lng = pos.coords.longitude;
+        navigator.geolocation.getCurrentPosition(function (pos) {
+          var lat = pos.coords.latitude;
+          var lng = pos.coords.longitude;
           userMarker = new google.maps.Marker({
-            position: { lat, lng }, map, title: "You are here",
+            position: { lat: lat, lng: lng },
+            map: map,
+            title: "You are here",
             icon: { url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" }
           });
         });
       }
 
-      // Click map → fill lat/lng + blue temp marker
-      map.addListener("click", (e) => {
-        const lat = e.latLng.lat(), lng = e.latLng.lng();
+      // Click → fill lat/lng + temp marker
+      map.addListener("click", function (e) {
+        var lat = e.latLng.lat();
+        var lng = e.latLng.lng();
         document.getElementById("lat").value = lat.toFixed(6);
         document.getElementById("lng").value = lng.toFixed(6);
         if (tempMarker) tempMarker.setMap(null);
         tempMarker = new google.maps.Marker({
-          position: { lat, lng }, map, title: "New report location",
+          position: { lat: lat, lng: lng },
+          map: map,
+          title: "New report location",
           icon: { url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" }
         });
       });
 
-      // Live Firestore pins
-      const reportsRef = collection(db, "reports");
-      onSnapshot(reportsRef, (snap) => {
-        markers.forEach((m)=>m.setMap(null)); markers = [];
-        let count = 0;
-        snap.forEach((doc) => {
-          const d = doc.data();
+      // Live pins from Firestore
+      var reportsRef = collection(db, "reports");
+      onSnapshot(reportsRef, function (snap) {
+        // clear existing
+        for (var i=0;i<markers.length;i++) { markers[i].setMap(null); }
+        markers = [];
+        var count = 0;
+
+        snap.forEach(function (doc) {
+          var d = doc.data();
           if (typeof d.lat !== "number" || typeof d.lng !== "number") return;
-          const marker = new google.maps.Marker({
+
+          var marker = new google.maps.Marker({
             position: { lat: d.lat, lng: d.lng },
-            map,
-            title: `${d.type || "Report"} - ${d.breed || "Unknown"}`
+            map: map,
+            title: ((d.type||"Report") + " - " + (d.breed||"Unknown"))
           });
-          const when = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleString() : "just now";
-          const info = new google.maps.InfoWindow({
-            content: `
-              <div style="font-size:14px;min-width:220px">
-                <div style="font-weight:800">${d.type || "Report"}</div>
-                <div style="color:#98a2b3;font-size:12px;margin:4px 0">${d.breed || "Unknown"} • ${when}</div>
-                <div>${(d.desc || "No description").replace(/</g,"&lt;")}</div>
-                <div style="color:#98a2b3;font-size:12px;margin-top:6px">(${d.lat.toFixed(5)}, ${d.lng.toFixed(5)})</div>
-              </div>`
+
+          var when = (d.createdAt && d.createdAt.toDate) ? d.createdAt.toDate().toLocaleString() : "just now";
+          var info = new google.maps.InfoWindow({
+            content:
+              '<div style="font-size:14px;min-width:220px">' +
+                '<div style="font-weight:800">' + (d.type||"Report") + '</div>' +
+                '<div style="color:#98a2b3;font-size:12px;margin:4px 0">' + (d.breed||"Unknown") + ' • ' + when + '</div>' +
+                '<div>' + (String(d.desc||"No description").replace(/</g,"&lt;")) + '</div>' +
+                '<div style="color:#98a2b3;font-size:12px;margin-top:6px">(' + d.lat.toFixed(5) + ', ' + d.lng.toFixed(5) + ')</div>' +
+              '</div>'
           });
-          marker.addListener("click", () => info.open(map, marker));
+          marker.addListener("click", function () { info.open(map, marker); });
+
           markers.push(marker);
           count++;
         });
+
         setStatus("status-pins", String(count));
         setStatus("status-firestore", "connected ✅");
       });
 
       // Form submit → Firestore
-      const form = document.getElementById("reportForm");
-      form?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const type  = document.getElementById("type").value || "Unknown";
-        const breed = document.getElementById("breed").value || "Unknown";
-        const desc  = document.getElementById("desc").value || "";
-        const lat = parseFloat(document.getElementById("lat").value) || map.getCenter().lat();
-        const lng = parseFloat(document.getElementById("lng").value) || map.getCenter().lng();
+      var form = document.getElementById("reportForm");
+      if (form) {
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
 
-        try {
-          await addDoc(collection(db, "reports"), { type, breed, desc, lat, lng, createdAt: serverTimestamp() });
-          alert("Report submitted!");
-          form.reset();
-          if (tempMarker) { tempMarker.setMap(null); tempMarker = null; }
-        } catch (err) {
-          console.error("Save failed:", err);
-          setStatus("status-firestore", "save failed ❌");
-        }
-      });
+          var type  = document.getElementById("type").value || "Unknown";
+          var breed = document.getElementById("breed").value || "Unknown";
+          var desc  = document.getElementById("desc").value  || "";
+          var latV  = parseFloat(document.getElementById("lat").value);
+          var lngV  = parseFloat(document.getElementById("lng").value);
+          var lat   = isNaN(latV) ? map.getCenter().lat() : latV;
+          var lng   = isNaN(lngV) ? map.getCenter().lng() : lngV;
+
+          addDoc(collection(db, "reports"), {
+            type: type, breed: breed, desc: desc, lat: lat, lng: lng, createdAt: serverTimestamp()
+          }).then(function () {
+            alert("Report submitted!");
+            form.reset();
+            if (tempMarker) { tempMarker.setMap(null); tempMarker = null; }
+          }).catch(function (err) {
+            console.error("Save failed:", err);
+            setStatus("status-firestore", "save failed ❌");
+          });
+        });
+      }
     };
   </script>
 
