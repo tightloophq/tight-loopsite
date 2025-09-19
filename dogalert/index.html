@@ -2,22 +2,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dog Alert LIVE · Dog Alert</title>
   <style>
     :root { --bg:#0f1115; --panel:#161a22; --text:#e7ecf3; --muted:#97a2b0; --accent:#ff7a00; --border:#232836; --green:#16c784; --blue:#4aa8ff; }
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;height:100vh;display:grid;grid-template-rows:64px 1fr}
     header{display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--border)}
-    header .brand{display:flex;align-items:center;gap:12px}
-    header .brand .logo{width:28px;height:28px;border:2px solid var(--accent);border-radius:6px;display:grid;place-items:center;color:var(--accent);font-weight:800}
-    header .brand h1{font-size:18px;margin:0;letter-spacing:.4px}
-    header .actions .pill{display:inline-block;padding:2px 8px;font-size:12px;border:1px solid var(--border);border-radius:999px;color:var(--muted)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:28px;height:28px;border:2px solid var(--accent);border-radius:6px;display:grid;place-items:center;color:var(--accent);font-weight:800}
     main{display:grid;grid-template-columns:360px 1fr;min-height:0}
     aside{background:var(--panel);border-right:1px solid var(--border);padding:16px;overflow:auto}
     section{padding:12px 0;border-bottom:1px dashed var(--border)}
-    section:last-child{border-bottom:none}
     h2{font-size:14px;margin:0 0 10px;text-transform:uppercase;color:var(--muted);letter-spacing:.8px}
     label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
     input,select,textarea,button{width:100%;padding:10px 12px;background:#0c0f14;color:var(--text);border:1px solid var(--border);border-radius:10px;font-size:14px}
@@ -34,15 +31,19 @@
     .btn-pro{background:var(--green)}
     gmpx-place-autocomplete{display:block}
     .btn-row{display:flex;gap:8px}
+    footer{display:none}
   </style>
 </head>
 <body>
   <header>
     <div class="brand">
       <div class="logo">!</div>
-      <h1>Dog Alert</h1>
+      <div>
+        <div style="font-weight:800">Dog Alert</div>
+        <div style="font-size:11px;color:var(--muted)">LIVE</div>
+      </div>
     </div>
-    <div class="actions"><span class="pill">Live</span></div>
+    <div style="padding-right:10px"><span style="color:var(--muted);font-size:12px">v1.0</span></div>
   </header>
 
   <main>
@@ -51,7 +52,7 @@
         <h2>Search</h2>
         <label for="placeSearch">Find a place</label>
         <gmpx-place-autocomplete id="placeSearch" placeholder="Search address, park, etc."></gmpx-place-autocomplete>
-        <div class="muted" style="margin-top:8px;">Drag/zoom, search, or use the buttons below.</div>
+        <div class="muted" style="margin-top:8px;">Drag/zoom, search, or use the buttons below to set report location.</div>
       </section>
 
       <section>
@@ -128,8 +129,13 @@
     <div id="map"></div>
   </main>
 
-  <script type="module" src="./app.js"></script>
+  <!-- app code -->
+  <script type="module" src="./dogalert/app.js"></script>
+
+  <!-- Place Autocomplete web component -->
   <script src="https://unpkg.com/@googlemaps/extended-component-library"></script>
+
+  <!-- Maps JS (key baked in for your project) -->
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&libraries=places&callback=initDogAlert&loading=async"
     async defer></script>
