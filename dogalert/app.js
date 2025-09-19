@@ -45,8 +45,8 @@ function infoHTML(d){
   </div>`;
 }
 
-// Expose globally for Google callback
-window.initDogAlert = function initDogAlert(){
+// ✅ Attach globally for Google Maps callback
+window.initDogAlert = () => {
   try {
     const defaultCenter = { lat: 51.0486, lng: -114.0708 };
     map = new google.maps.Map(document.getElementById("map"), {
@@ -113,7 +113,7 @@ function livePins(){
           const html = infoHTML(d);
           if(!markers.get(id)){
             const marker = new google.maps.Marker({ position: pos, map, title: `${d.type}: ${d.breed}` });
-            marker.addEventListener?.("click",()=>{ infoWindow.setContent(html); infoWindow.open({map, anchor: marker}); });
+            marker.addListener("click",()=>{ infoWindow.setContent(html); infoWindow.open({map, anchor: marker}); });
             markers.set(id, { marker, data:d });
           } else {
             const f = markers.get(id); f.data = d; f.marker.setPosition(pos);
@@ -147,9 +147,8 @@ form.addEventListener("submit", async (e)=>{
 
   const data = { type, breed, desc, lat, lng, createdAt: serverTimestamp() };
 
-  // optimistic pin immediately
   const tempMarker = new google.maps.Marker({ position: {lat, lng}, map, title: `${type}: ${breed}` });
-  tempMarker.addEventListener("click",()=>{
+  tempMarker.addListener("click",()=>{
     infoWindow.setContent(infoHTML({ ...data, createdAt:{ toDate: ()=>new Date() } }));
     infoWindow.open({ map, anchor: tempMarker });
   });
