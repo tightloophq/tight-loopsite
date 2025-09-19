@@ -3,199 +3,185 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dog Alert LIVE</title>
-
-  <!-- inline favicon to avoid /favicon.ico 404 -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='12' ry='12' fill='%23ff7a00'/%3E%3Ctext x='50' y='62' font-size='64' text-anchor='middle' fill='white'%3E!%3C/text%3E%3C/svg%3E">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dog Alert</title>
   <style>
-    :root { --bg:#0f1115; --panel:#14171c; --ink:#fff; --muted:#98a2b3; --accent:#ff7a00; }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);display:flex;height:100vh}
-    #sidebar{width:320px;background:var(--panel);padding:15px;display:flex;flex-direction:column;overflow-y:auto}
-    #map{flex:1;min-width:0}
-    h1{font-size:20px;margin:0 0 15px;color:var(--accent)}
-    h2{font-size:16px;margin:20px 0 5px;color:#ccc}
-    select,textarea,input{width:100%;margin-bottom:10px;padding:8px;border-radius:4px;border:none;background:#0f141c;color:#eaeef3}
-    button{width:100%;padding:10px;background:var(--accent);color:#111;border:none;border-radius:4px;cursor:pointer;font-weight:800}
-    button:hover{background:#e65c00}
-    .status{margin-top:8px;font-size:14px;padding:6px;border-radius:4px;background:#1c1f26}
-    .upgrade{margin-top:20px;padding:12px;background:#1a1d23;border-radius:6px;text-align:center}
-    .upgrade h3{margin:0 0 10px}
-    .upgrade a{display:inline-block;margin-top:8px;padding:8px 12px;border-radius:4px;text-decoration:none;font-weight:800}
-    .btn-basic{background:#4aa8ff;color:#000}
-    .btn-pro{background:#16c784;color:#000}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0b0f;
+      color: #eaeaf0;
+      display: flex;
+      height: 100vh;
+    }
+    #controls {
+      width: 320px;
+      padding: 16px;
+      background: #12131a;
+      border-right: 1px solid #232538;
+      overflow-y: auto;
+    }
+    #map {
+      flex: 1;
+    }
+    h1 {margin-top: 0;font-size: 1.4rem;}
+    label {display:block;margin-top:10px;font-size:0.9rem;}
+    input, select, textarea, button {
+      width: 100%;
+      margin-top: 4px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #35384a;
+      background: #1f2230;
+      color: #eaeaf0;
+    }
+    button {cursor:pointer;font-weight:600;}
+    button:hover {filter:brightness(1.1);}
+    /* Stripe Floating Bar */
+    #stripeBar{position:fixed;left:0;right:0;bottom:16px;z-index:9999;display:flex;justify-content:center;pointer-events:none}
+    #stripeBar .sb-wrap{pointer-events:auto;display:flex;gap:16px;align-items:center;background:#0b0b0f;border:1px solid #2a2a36;border-radius:14px;padding:10px 14px;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:560px;width:calc(100% - 24px)}
+    #stripeBar strong{color:#eaeaf0;font-weight:700;letter-spacing:.2px}
+    #stripeBar .sb-actions{margin-left:auto;display:flex;gap:10px}
+    #stripeBar .sb-btn{display:inline-block;text-decoration:none;padding:8px 14px;border-radius:10px;background:#1f2230;border:1px solid #35384a;color:#eaeaf0;font-weight:600}
+    #stripeBar .sb-btn:hover{filter:brightness(1.1)}
+    #stripeBar .sb-btn.sb-pro{background:#2b3a18;border-color:#3e5a1a}
+    @media (max-width:520px){
+      #stripeBar .sb-wrap{gap:10px}
+      #stripeBar strong{font-size:.95rem}
+      #stripeBar .sb-btn{padding:8px 12px}
+    }
   </style>
 </head>
 <body>
-  <div id="sidebar">
-    <h1>🐾 Dog Alert <span style="font-size:12px;color:#aaa">LIVE</span></h1>
-
-    <h2>Report a Dog</h2>
+  <div id="controls">
+    <h1>Dog Alert</h1>
     <form id="reportForm">
-      <select id="type" required>
-        <option value="">Select type</option>
-        <option>Aggressive</option>
-        <option>Loose</option>
-        <option>Suspicious</option>
-      </select>
-      <select id="breed" required>
-        <option value="">Select breed</option>
-        <option>Pit Bull</option>
-        <option>Rottweiler</option>
-        <option>German Shepherd</option>
-        <option>Labrador</option>
-        <option>Husky</option>
-        <option>Other / Unknown</option>
-      </select>
-      <textarea id="desc" rows="3" placeholder="Color, behavior, collar, direction..."></textarea>
-      <input id="lat" type="text" placeholder="Latitude (auto if empty)" />
-      <input id="lng" type="text" placeholder="Longitude (auto if empty)" />
-      <button type="submit">Post Report</button>
+      <label>Breed
+        <select id="breed">
+          <option value="Unknown">Unknown</option>
+          <option value="Pitbull">Pitbull</option>
+          <option value="German Shepherd">German Shepherd</option>
+          <option value="Rottweiler">Rottweiler</option>
+          <option value="Bulldog">Bulldog</option>
+          <option value="Husky">Husky</option>
+        </select>
+      </label>
+      <label>Type
+        <select id="type">
+          <option value="Loose">Loose</option>
+          <option value="Mean">Mean</option>
+          <option value="Vicious">Vicious</option>
+        </select>
+      </label>
+      <label>Description
+        <textarea id="description" rows="3"></textarea>
+      </label>
+      <label>Image
+        <input type="file" id="image" accept="image/*" />
+      </label>
+      <button type="submit">Submit Report</button>
     </form>
+  </div>
+  <div id="map"></div>
 
-    <h2>Status</h2>
-    <div class="status">Map: <span id="status-map">loading…</span></div>
-    <div class="status">Firestore: <span id="status-firestore">loading…</span></div>
-    <div class="status">Live pins: <span id="status-pins">0</span></div>
-
-    <div class="upgrade">
-      <h3>Dog Alert Basic · $4.99/mo</h3>
-      <p>Remove ads. Support the network. Early features.</p>
-      <a class="btn-basic" href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" target="_blank" rel="noopener">Buy Basic</a>
-    </div>
-    <div class="upgrade">
-      <h3>Dog Alert Pro · $9.99/mo</h3>
-      <p>Priority alerts, advanced filters, map export.</p>
-      <a class="btn-pro" href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" target="_blank" rel="noopener">Buy Pro</a>
+  <!-- Stripe Floating Bar -->
+  <div id="stripeBar">
+    <div class="sb-wrap">
+      <strong>Dog Alert</strong>
+      <div class="sb-actions">
+        <a href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" target="_blank" rel="noopener" class="sb-btn">Basic</a>
+        <a href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" target="_blank" rel="noopener" class="sb-btn sb-pro">Pro</a>
+      </div>
     </div>
   </div>
 
-  <div id="map"></div>
-
-  <!-- All logic inline: no app.js -->
   <script type="module">
+    // Firebase config
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // --- Firebase ---
     const firebaseConfig = {
-      apiKey: "AIzaSyD0MJBsX37dCTMP0pj0WMsMHR6__g_Wa-w",
-      authDomain: "dog-alert-39ea0.firebaseapp.com",
-      projectId: "dog-alert-39ea0",
-      storageBucket: "dog-alert-39ea0.appspot.com",
-      messagingSenderId: "569616949041",
-      appId: "1:569616949041:web:5c9d94b2002ada585fda10"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
+
     const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+    const db = getFirestore(app);
 
-    // --- Helpers / Globals ---
-    function setStatus(id, text){ var el=document.getElementById(id); if(el){ el.textContent=text; } }
-    var map=null, tempMarker=null, userMarker=null, markers=[];
-    var lastClicked=null; // remembers last map click
+    let map;
 
-    // --- Google Maps callback ---
-    window.initMap = function () {
+    async function initMap() {
       map = new google.maps.Map(document.getElementById("map"), {
-        center:{ lat:52.7575, lng:-108.2861 }, zoom:13, mapTypeControl:true
+        center: { lat: 51.0447, lng: -114.0719 },
+        zoom: 12,
+        mapId: "DEMO_MAP_ID"
       });
-      setStatus("status-map","ready ✅");
 
-      // GPS green dot + center map to GPS
-      if(navigator.geolocation){
-        navigator.geolocation.getCurrentPosition(function(pos){
-          var lat=pos.coords.latitude, lng=pos.coords.longitude;
-          userMarker = new google.maps.Marker({
-            position:{lat:lat,lng:lng}, map:map, title:"You are here",
-            icon:{ url:"https://maps.google.com/mapfiles/ms/icons/green-dot.png" }
-          });
-          map.setCenter({lat:lat,lng:lng});
-        });
+      // Load pins from Firestore
+      const querySnapshot = await getDocs(collection(db, "reports"));
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        addMarker(data);
+      });
+    }
+
+    function addMarker(data) {
+      const marker = new google.maps.Marker({
+        position: { lat: data.lat, lng: data.lng },
+        map: map
+      });
+
+      const content = `
+        <div>
+          <strong>${data.breed} (${data.type})</strong><br>
+          ${data.description || ""}
+          ${data.image ? `<br><img src="${data.image}" width="120"/>` : ""}
+        </div>`;
+      const infowindow = new google.maps.InfoWindow({ content });
+      marker.addListener("click", () => infowindow.open(map, marker));
+    }
+
+    document.getElementById("reportForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const breed = document.getElementById("breed").value;
+      const type = document.getElementById("type").value;
+      const description = document.getElementById("description").value;
+      const file = document.getElementById("image").files[0];
+
+      let base64Image = "";
+      if (file) {
+        base64Image = await toBase64(file);
       }
 
-      // Click → fill lat/lng + blue temp marker + remember click
-      map.addListener("click", function(e){
-        var lat=e.latLng.lat(), lng=e.latLng.lng();
-        lastClicked = {lat:lat,lng:lng};
-        document.getElementById("lat").value = lat.toFixed(6);
-        document.getElementById("lng").value = lng.toFixed(6);
-        if(tempMarker) tempMarker.setMap(null);
-        tempMarker = new google.maps.Marker({
-          position:{lat:lat,lng:lng}, map:map, title:"New report location",
-          icon:{ url:"https://maps.google.com/mapfiles/ms/icons/blue-dot.png" }
-        });
+      const position = map.getCenter();
+
+      const docRef = await addDoc(collection(db, "reports"), {
+        breed, type, description,
+        lat: position.lat(),
+        lng: position.lng(),
+        image: base64Image
       });
+      console.log("Report saved:", docRef.id);
 
-      // Live Firestore pins
-      var reportsRef = collection(db,"reports");
-      onSnapshot(reportsRef, function(snap){
-        for(var i=0;i<markers.length;i++){ markers[i].setMap(null); }
-        markers=[]; var count=0;
+      addMarker({ breed, type, description, lat: position.lat(), lng: position.lng(), image: base64Image });
+      e.target.reset();
+    });
 
-        snap.forEach(function(docSnap){
-          var d=docSnap.data();
-          if(typeof d.lat!=="number" || typeof d.lng!=="number") return;
-          var m=new google.maps.Marker({
-            position:{lat:d.lat,lng:d.lng}, map:map,
-            title:( (d.type||"Report")+" - "+(d.breed||"Unknown") )
-          });
-          var when=(d.createdAt && d.createdAt.toDate) ? d.createdAt.toDate().toLocaleString() : "just now";
-          var infowin=new google.maps.InfoWindow({
-            content:
-              '<div style="font-size:14px;min-width:220px">'+
-                '<div style="font-weight:800">'+(d.type||"Report")+'</div>'+
-                '<div style="color:#98a2b3;font-size:12px;margin:4px 0">'+(d.breed||"Unknown")+' • '+when+'</div>'+
-                '<div>'+String(d.desc||"No description").replace(/</g,"&lt;")+'</div>'+
-                '<div style="color:#98a2b3;font-size:12px;margin-top:6px">('+
-                  d.lat.toFixed(5)+', '+d.lng.toFixed(5)+')</div>'+
-              '</div>'
-          });
-          m.addListener("click",function(){ infowin.open(map,m); });
-          markers.push(m); count++;
-        });
-
-        setStatus("status-pins", String(count));
-        setStatus("status-firestore","connected ✅");
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
       });
+    }
 
-      // Submit → choose location: typed → click → GPS → center
-      var form=document.getElementById("reportForm");
-      if(form){
-        form.addEventListener("submit", function(e){
-          e.preventDefault();
-          var type = document.getElementById("type").value || "Unknown";
-          var breed= document.getElementById("breed").value|| "Unknown";
-          var desc = document.getElementById("desc").value  || "";
-
-          var latV=parseFloat(document.getElementById("lat").value);
-          var lngV=parseFloat(document.getElementById("lng").value);
-          var lat,lng;
-
-          if(!isNaN(latV) && !isNaN(lngV)){ lat=latV; lng=lngV; }
-          else if(lastClicked){ lat=lastClicked.lat; lng=lastClicked.lng; }
-          else if(userMarker && userMarker.getPosition){
-            var p=userMarker.getPosition(); lat=p.lat(); lng=p.lng();
-          } else { lat=map.getCenter().lat(); lng=map.getCenter().lng(); }
-
-          addDoc(collection(db,"reports"),{
-            type:type, breed:breed, desc:desc, lat:lat, lng:lng, createdAt:serverTimestamp()
-          }).then(function(){
-            alert("Report submitted!");
-            form.reset();
-            if(tempMarker){ tempMarker.setMap(null); tempMarker=null; }
-            lastClicked=null;
-          }).catch(function(err){
-            console.error("Save failed:",err);
-            setStatus("status-firestore","save failed ❌");
-          });
-        });
-      }
-    };
+    window.initMap = initMap;
   </script>
-
-  <!-- Google Maps (async, with callback) -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=initMap&loading=async" async defer></script>
+  <script async src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap"></script>
 </body>
 </html>
