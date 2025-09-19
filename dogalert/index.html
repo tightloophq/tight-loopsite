@@ -5,11 +5,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dog Alert LIVE</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" />
   <style>
     body {
       margin: 0;
-      font-family: "Roboto", sans-serif;
+      font-family: Arial, sans-serif;
       background: #0f1115;
       color: #fff;
       display: flex;
@@ -26,54 +25,26 @@
     #map {
       flex: 1;
     }
-    h1 {
-      font-size: 20px;
-      margin: 0 0 15px;
-      color: #ff6600;
-    }
-    h2 {
-      font-size: 16px;
-      margin-top: 20px;
-      margin-bottom: 5px;
-      color: #ccc;
-    }
+    h1 { font-size: 20px; margin: 0 0 15px; color: #ff6600; }
+    h2 { font-size: 16px; margin-top: 20px; margin-bottom: 5px; color: #ccc; }
     select, textarea, input {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 8px;
-      border-radius: 4px;
-      border: none;
+      width: 100%; margin-bottom: 10px; padding: 8px;
+      border-radius: 4px; border: none;
     }
     button {
-      width: 100%;
-      padding: 10px;
-      background: #ff6600;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
+      width: 100%; padding: 10px; background: #ff6600; color: white;
+      border: none; border-radius: 4px; cursor: pointer; font-weight: bold;
     }
-    button:hover {
-      background: #e65c00;
+    button:hover { background: #e65c00; }
+    .status { margin-top: 8px; font-size: 14px; padding: 6px; border-radius: 4px; background: #1c1f26; }
+    .upgrade { margin-top: 20px; padding: 12px; background: #1a1d23; border-radius: 6px; text-align: center; }
+    .upgrade h3 { margin: 0 0 10px; }
+    .upgrade a {
+      display: inline-block; margin-top: 8px; padding: 8px 12px;
+      border-radius: 4px; text-decoration: none; font-weight: bold;
     }
-    .status {
-      margin-top: 10px;
-      font-size: 14px;
-      padding: 6px;
-      border-radius: 4px;
-      background: #1c1f26;
-    }
-    .upgrade {
-      margin-top: 20px;
-      padding: 12px;
-      background: #1a1d23;
-      border-radius: 6px;
-      text-align: center;
-    }
-    .upgrade h3 {
-      margin: 0 0 10px;
-    }
+    .btn-basic { background: #4aa8ff; color: #000; }
+    .btn-pro { background: #16c784; color: #000; }
   </style>
 </head>
 <body>
@@ -97,8 +68,8 @@
         <option value="Husky">Husky</option>
       </select>
       <textarea id="desc" placeholder="Color, behavior, collar, direction..." rows="3"></textarea>
-      <input type="text" id="lat" placeholder="Latitude (optional)" />
-      <input type="text" id="lng" placeholder="Longitude (optional)" />
+      <input type="text" id="lat" placeholder="Latitude (auto if empty)" />
+      <input type="text" id="lng" placeholder="Longitude (auto if empty)" />
       <button type="submit">Post Report</button>
     </form>
 
@@ -108,23 +79,23 @@
     <div class="status">Live pins: <span id="status-pins">0</span></div>
 
     <div class="upgrade">
-      <h3>Dog Alert Basic - $4.99/mo</h3>
+      <h3>Dog Alert Basic · $4.99/mo</h3>
       <p>Remove ads. Support the network. Early features.</p>
-      <button>Buy Basic (Test)</button>
+      <a class="btn-basic" href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" target="_blank">Buy Basic</a>
     </div>
     <div class="upgrade">
-      <h3>Dog Alert Pro - $9.99/mo</h3>
+      <h3>Dog Alert Pro · $9.99/mo</h3>
       <p>Priority alerts, advanced filters, map export.</p>
-      <button>Buy Pro (Test)</button>
+      <a class="btn-pro" href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" target="_blank">Buy Pro</a>
     </div>
   </div>
 
   <div id="map"></div>
 
-  <!-- Firebase + App -->
-  <script type="module" src="dogalert/app.js"></script>
+  <!-- App -->
+  <script type="module" src="app.js"></script>
 
-  <!-- Google Maps (initMap comes from app.js) -->
+  <!-- Google Maps -->
   <script async
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=initMap">
   </script>
