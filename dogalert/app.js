@@ -38,7 +38,7 @@ window.initDogAlert = function initDogAlert() {
     mapId: "da4c6e8b0c4a5f77",
   });
 
-  // Load existing pins live from Firestore
+  // Live pins from Firestore
   const reportsRef = collection(db, "reports");
   onSnapshot(reportsRef, (snapshot) => {
     document.getElementById("livePins").innerText = snapshot.size;
@@ -46,10 +46,19 @@ window.initDogAlert = function initDogAlert() {
     snapshot.docChanges().forEach((change) => {
       if (change.type === "added") {
         const data = change.doc.data();
-        new google.maps.Marker({
+
+        // Use AdvancedMarkerElement instead of Marker
+        const pin = new google.maps.marker.AdvancedMarkerElement({
           position: { lat: data.lat, lng: data.lng },
           map,
           title: `${data.type} - ${data.breed}`,
+        });
+
+        // Optional click info
+        pin.addListener("click", () => {
+          alert(
+            `Type: ${data.type}\nBreed: ${data.breed}\nDesc: ${data.desc || "N/A"}`
+          );
         });
       }
     });
