@@ -17,7 +17,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-// enable offline persistence where possible
 enableIndexedDbPersistence(db).catch(()=>{});
 
 const statusMap = document.getElementById("statusMap");
@@ -46,6 +45,7 @@ function infoHTML(d){
   </div>`;
 }
 
+// Expose globally for Google callback
 window.initDogAlert = function initDogAlert(){
   try {
     const defaultCenter = { lat: 51.0486, lng: -114.0708 };
@@ -149,7 +149,7 @@ form.addEventListener("submit", async (e)=>{
 
   // optimistic pin immediately
   const tempMarker = new google.maps.Marker({ position: {lat, lng}, map, title: `${type}: ${breed}` });
-  tempMarker.addListener("click",()=>{
+  tempMarker.addEventListener("click",()=>{
     infoWindow.setContent(infoHTML({ ...data, createdAt:{ toDate: ()=>new Date() } }));
     infoWindow.open({ map, anchor: tempMarker });
   });
