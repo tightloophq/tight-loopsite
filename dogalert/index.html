@@ -2,145 +2,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dog Alert LIVE · Dog Alert</title>
-
-  <!-- tiny inline favicon to prevent /favicon.ico 404 -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='12' ry='12' fill='%23ff7a00'/%3E%3Ctext x='50' y='62' font-size='64' text-anchor='middle' fill='white'%3E!%3C/text%3E%3C/svg%3E" />
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dog Alert LIVE</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" />
   <style>
-    :root { --bg:#0f1115; --panel:#161a22; --text:#e7ecf3; --muted:#97a2b0; --accent:#ff7a00; --border:#232836; --green:#16c784; --blue:#4aa8ff; }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;height:100vh;display:grid;grid-template-rows:64px 1fr}
-    header{display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--border)}
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:28px;height:28px;border:2px solid var(--accent);border-radius:6px;display:grid;place-items:center;color:var(--accent);font-weight:800}
-    main{display:grid;grid-template-columns:360px 1fr;min-height:0}
-    aside{background:var(--panel);border-right:1px solid var(--border);padding:16px;overflow:auto}
-    section{padding:12px 0;border-bottom:1px dashed var(--border)}
-    h2{font-size:14px;margin:0 0 10px;text-transform:uppercase;color:var(--muted);letter-spacing:.8px}
-    label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
-    input,select,textarea,button{width:100%;padding:10px 12px;background:#0c0f14;color:var(--text);border:1px solid var(--border);border-radius:10px;font-size:14px}
-    button{background:var(--accent);border:none;color:#111;font-weight:700;cursor:pointer}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .muted{color:var(--muted);font-size:12px}
-    #map{width:100%;height:100%}
-    .note{background:#10151e;padding:10px;border:1px solid var(--border);border-radius:10px}
-    .card{background:#10151e;border:1px solid var(--border);border-radius:12px;padding:12px}
-    .price h3{margin:0 0 4px}
-    .price .amount{font-weight:800}
-    .btn{display:inline-block;margin-top:8px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#0b0f14;font-weight:800}
-    .btn-basic{background:var(--blue)}
-    .btn-pro{background:var(--green)}
-    gmpx-place-autocomplete{display:block}
-    .btn-row{display:flex;gap:8px}
+    body {
+      margin: 0;
+      font-family: "Roboto", sans-serif;
+      background: #0f1115;
+      color: #fff;
+      display: flex;
+      height: 100vh;
+    }
+    #sidebar {
+      width: 320px;
+      background: #14171c;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    #map {
+      flex: 1;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 15px;
+      color: #ff6600;
+    }
+    h2 {
+      font-size: 16px;
+      margin-top: 20px;
+      margin-bottom: 5px;
+      color: #ccc;
+    }
+    select, textarea, input {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 4px;
+      border: none;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #ff6600;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #e65c00;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+      padding: 6px;
+      border-radius: 4px;
+      background: #1c1f26;
+    }
+    .upgrade {
+      margin-top: 20px;
+      padding: 12px;
+      background: #1a1d23;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .upgrade h3 {
+      margin: 0 0 10px;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <div class="logo">!</div>
-      <div>
-        <div style="font-weight:800">Dog Alert</div>
-        <div style="font-size:11px;color:var(--muted)">LIVE</div>
-      </div>
+  <div id="sidebar">
+    <h1>🐾 Dog Alert <span style="font-size:12px;color:#aaa;">LIVE</span></h1>
+
+    <h2>Report a Dog</h2>
+    <form id="reportForm">
+      <select id="type" required>
+        <option value="">Select type</option>
+        <option value="Aggressive">Aggressive</option>
+        <option value="Loose">Loose</option>
+        <option value="Suspicious">Suspicious</option>
+      </select>
+      <select id="breed" required>
+        <option value="">Select breed</option>
+        <option value="Pit Bull">Pit Bull</option>
+        <option value="Rottweiler">Rottweiler</option>
+        <option value="German Shepherd">German Shepherd</option>
+        <option value="Labrador">Labrador</option>
+        <option value="Husky">Husky</option>
+      </select>
+      <textarea id="desc" placeholder="Color, behavior, collar, direction..." rows="3"></textarea>
+      <input type="text" id="lat" placeholder="Latitude (optional)" />
+      <input type="text" id="lng" placeholder="Longitude (optional)" />
+      <button type="submit">Post Report</button>
+    </form>
+
+    <h2>Status</h2>
+    <div class="status">Map: <span id="status-map">loading…</span></div>
+    <div class="status">Firestore: <span id="status-firestore">loading…</span></div>
+    <div class="status">Live pins: <span id="status-pins">0</span></div>
+
+    <div class="upgrade">
+      <h3>Dog Alert Basic - $4.99/mo</h3>
+      <p>Remove ads. Support the network. Early features.</p>
+      <button>Buy Basic (Test)</button>
     </div>
-    <div style="padding-right:10px"><span style="color:var(--muted);font-size:12px">v1.0</span></div>
-  </header>
+    <div class="upgrade">
+      <h3>Dog Alert Pro - $9.99/mo</h3>
+      <p>Priority alerts, advanced filters, map export.</p>
+      <button>Buy Pro (Test)</button>
+    </div>
+  </div>
 
-  <main>
-    <aside>
-      <section>
-        <h2>Search</h2>
-        <label for="placeSearch">Find a place</label>
-        <gmpx-place-autocomplete id="placeSearch" placeholder="Search address, park, etc."></gmpx-place-autocomplete>
-        <div class="muted" style="margin-top:8px;">Drag/zoom, search, or use the buttons below to set report location.</div>
-      </section>
+  <div id="map"></div>
 
-      <section>
-        <h2>Report a Dog</h2>
-        <form id="reportForm">
-          <label for="reportType">Type</label>
-          <select id="reportType">
-            <option value="">(optional)</option>
-            <option>Aggressive</option>
-            <option>Loose</option>
-            <option>Suspicious</option>
-          </select>
+  <!-- Firebase + App -->
+  <script type="module" src="dogalert/app.js"></script>
 
-          <label for="reportBreed">Breed</label>
-          <select id="reportBreed">
-            <option value="">(optional)</option>
-            <option>Pit Bull</option>
-            <option>German Shepherd</option>
-            <option>Rottweiler</option>
-            <option>Husky</option>
-            <option>Bulldog</option>
-            <option>Labrador</option>
-            <option>Other / Unknown</option>
-          </select>
-
-          <label for="reportDesc">Description</label>
-          <textarea id="reportDesc" rows="3" placeholder="Color, behavior, collar, direction… (optional)"></textarea>
-
-          <div class="row">
-            <div>
-              <label for="lat">Latitude</label>
-              <input id="lat" placeholder="(auto if empty)" />
-            </div>
-            <div>
-              <label for="lng">Longitude</label>
-              <input id="lng" placeholder="(auto if empty)" />
-            </div>
-          </div>
-
-          <div class="btn-row" style="margin-top:8px;">
-            <button type="button" id="btnUseCenter" style="flex:1;">Use Map Center</button>
-            <button type="button" id="btnUseGps" style="flex:1;">Use My GPS</button>
-          </div>
-
-          <button type="submit" style="margin-top:12px;">Post Report</button>
-          <div class="muted" style="margin-top:8px;">No coords? We’ll use the map center automatically.</div>
-        </form>
-      </section>
-
-      <section>
-        <h2>Status</h2>
-        <div class="note" id="statusBox">
-          Map: <strong id="statusMap">loading…</strong><br/>
-          Firestore: <strong id="statusDb">loading…</strong><br/>
-          Live pins: <strong id="statusPins">0</strong>
-        </div>
-      </section>
-
-      <section>
-        <h2>Upgrade</h2>
-        <div class="card price">
-          <h3>Dog Alert Basic <span class="amount">· $4.99/mo</span></h3>
-          <p>Remove ads. Support the network. Early features.</p>
-          <a class="btn btn-basic" href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" target="_blank" rel="noopener">Buy Basic (Test)</a>
-        </div>
-        <div class="card price" style="margin-top:10px;">
-          <h3>Dog Alert Pro <span class="amount">· $9.99/mo</span></h3>
-          <p>Priority alerts, advanced filters, export, and more.</p>
-          <a class="btn btn-pro" href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" target="_blank" rel="noopener">Buy Pro (Test)</a>
-        </div>
-      </section>
-    </aside>
-
-    <div id="map"></div>
-  </main>
-
-  <!-- app code (must load BEFORE Google callback runs) -->
-  <script type="module" src="./app.js"></script>
-
-  <!-- Place Autocomplete web component (module) -->
-  <script type="module" src="https://unpkg.com/@googlemaps/extended-component-library"></script>
-
-  <!-- Google Maps (calls window.initDogAlert when ready) -->
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&libraries=places&callback=initDogAlert&loading=async"
-    async defer></script>
+  <!-- Google Maps (initMap comes from app.js) -->
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=initMap">
+  </script>
 </body>
 </html>
