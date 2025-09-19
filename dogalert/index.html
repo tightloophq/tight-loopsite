@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dog Alert LIVE</title>
 
-  <!-- kill /favicon.ico 404 -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='12' ry='12' fill='%23ff7a00'/%3E%3Ctext x='50' y='62' font-size='64' text-anchor='middle' fill='white'%3E!%3C/text%3E%3C/svg%3E">
 
   <style>
@@ -72,7 +71,6 @@
 
   <div id="map"></div>
 
-  <!-- App logic embedded so there is NO app.js path to fail -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -90,7 +88,10 @@
     const db = getFirestore(app);
 
     let map, tempMarker = null, userMarker = null, markers = [];
-    const setStatus = (id, t) => (document.getElementById(id)?.textContent = t);
+    const setStatus = (id, t) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = t;
+    };
 
     // Expose callback for Google Maps
     window.initMap = function () {
@@ -177,7 +178,6 @@
     };
   </script>
 
-  <!-- Google Maps (async + defer + callback) -->
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=initMap&loading=async"
     async defer></script>
