@@ -1,20 +1,16 @@
 
-// app.js - Dog Alert
-
+// dogalert/app.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore,
   collection,
   addDoc,
-  onSnapshot,
-  serverTimestamp,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ----------------------
-// Firebase config
-// ----------------------
+// ----------------- CONFIG -----------------
 const firebaseConfig = {
-  apiKey: "AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec",
+  apiKey: "AIzaSyD0MJBsX37dCTMP0pj0WMsMHR6__g_Wa-w",
   authDomain: "dog-alert-39ea0.firebaseapp.com",
   projectId: "dog-alert-39ea0",
   storageBucket: "dog-alert-39ea0.appspot.com",
@@ -22,83 +18,56 @@ const firebaseConfig = {
   appId: "1:569616949041:web:5c9d94b2002ada585fda10",
 };
 
+// ----------------- FIREBASE -----------------
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ----------------------
-// Map setup
-// ----------------------
+// ----------------- MAP -----------------
 let map;
 let markers = [];
 
 window.initMap = function () {
   map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 52.7575, lng: -108.2861 }, // North Battleford default
+    center: { lat: 52.7575, lng: -108.2861 },
     zoom: 13,
-    mapId: "4504f8b37365c3d0",
+    styles: [
+      { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
+      { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
+      { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
+    ],
   });
 
-  // Firestore listener for live pins
-  const reportsRef = collection(db, "reports");
-  onSnapshot(
-    reportsRef,
-    (snapshot) => {
-      clearMarkers();
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.lat && data.lng) {
-          addMarker(data);
-        }
-      });
+  document.getElementById("status-map").innerText = "ready ✅";
 
-      updateStatus("firestore", "connected ✅");
-      updateStatus("pins", snapshot.size);
-    },
-    (error) => {
-      console.error("Error fetching reports:", error);
-      updateStatus("firestore", "error ❌");
-    }
-  );
+  // Listen for Firestore changes
+  const reportsRef = collection(db, "reports");
+  onSnapshot(reportsRef, (snapshot) => {
+    markers.forEach((m) => m.setMap(null));
+    markers = [];
+
+    let count = 0;
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.lat && data.lng) {
+        const marker = new google.maps.Marker({
+          position: { lat: data.lat, lng: data.lng },
+          map,
+          title: `${data.type} - ${data.breed}`,
+        });
+        markers.push(marker);
+        count++;
+      }
+    });
+    document.getElementById("status-pins").innerText = count;
+  });
+
+  document.getElementById("status-firestore").innerText = "connected ✅";
 };
 
-// ----------------------
-// Marker helpers
-// ----------------------
-function addMarker(data) {
-  const marker = new google.maps.Marker({
-    position: { lat: data.lat, lng: data.lng },
-    map,
-    title: `${data.type || "Dog"} - ${data.breed || ""}`,
-  });
-
-  const info = new google.maps.InfoWindow({
-    content: `
-      <div style="font-size:14px;">
-        <b>Type:</b> ${data.type || "N/A"}<br>
-        <b>Breed:</b> ${data.breed || "N/A"}<br>
-        <b>Desc:</b> ${data.desc || "None"}
-      </div>
-    `,
-  });
-
-  marker.addListener("click", () => {
-    info.open(map, marker);
-  });
-
-  markers.push(marker);
-}
-
-function clearMarkers() {
-  markers.forEach((m) => m.setMap(null));
-  markers = [];
-}
-
-// ----------------------
-// Report form
-// ----------------------
-document
-  .getElementById("reportForm")
-  ?.addEventListener("submit", async (e) => {
+// ----------------- REPORT FORM -----------------
+const form = document.getElementById("reportForm");
+if (form) {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const type = document.getElementById("type").value;
@@ -108,30 +77,18 @@ document
     const lng = parseFloat(document.getElementById("lng").value) || map.getCenter().lng();
 
     try {
-      const docRef = await addDoc(collection(db, "reports"), {
+      await addDoc(collection(db, "reports"), {
         type,
         breed,
         desc,
         lat,
         lng,
-        createdAt: serverTimestamp(),
+        createdAt: new Date(),
       });
-      console.log("✅ Report saved:", docRef.id);
-      updateStatus("firestore", "report saved ✅");
-    } catch (error) {
-      console.error("❌ Error saving report:", error);
-      updateStatus("firestore", "save failed ❌");
+      alert("Report submitted!");
+      form.reset();
+    } catch (err) {
+      console.error("Error adding report:", err);
     }
   });
-
-// ----------------------
-// Status helpers
-// ----------------------
-function updateStatus(id, text) {
-  const el = document.getElementById("status-" + id);
-  if (el) {
-    el.innerText = text;
-  } else {
-    console.log(`[STATUS] ${id}: ${text}`);
-  }
 }
