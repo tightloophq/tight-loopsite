@@ -17,6 +17,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+// Offline cache (warning about future deprecation is OK)
 enableIndexedDbPersistence(db).catch(()=>{});
 
 const statusMap = document.getElementById("statusMap");
@@ -45,7 +46,7 @@ function infoHTML(d){
   </div>`;
 }
 
-// ✅ Attach globally for Google Maps callback
+// ✅ Define globally for Google Maps callback
 window.initDogAlert = () => {
   try {
     const defaultCenter = { lat: 51.0486, lng: -114.0708 };
@@ -81,6 +82,7 @@ window.initDogAlert = () => {
       });
     });
 
+    // New Places element
     const ac = document.getElementById("placeSearch");
     ac?.addEventListener("gmpx-placechange",()=>{
       const p = ac.getPlace?.();
@@ -103,22 +105,26 @@ function livePins(){
         snap.docChanges().forEach((ch)=>{
           const id = ch.doc.id, d = ch.doc.data();
           if(!d) return;
+
           if(ch.type === "removed"){
             const f = markers.get(id);
             if(f){ f.marker.setMap(null); markers.delete(id); }
             return;
           }
+
           const pos = { lat:Number(d.lat), lng:Number(d.lng) };
           if(!Number.isFinite(pos.lat) || !Number.isFinite(pos.lng)) return;
+
           const html = infoHTML(d);
           if(!markers.get(id)){
             const marker = new google.maps.Marker({ position: pos, map, title: `${d.type}: ${d.breed}` });
-            marker.addListener("click",()=>{ infoWindow.setContent(html); infoWindow.open({map, anchor: marker}); });
+            marker.addEventListener?.("click",()=>{ infoWindow.setContent(html); infoWindow.open({map, anchor: marker}); });
             markers.set(id, { marker, data:d });
           } else {
             const f = markers.get(id); f.data = d; f.marker.setPosition(pos);
           }
         });
+
         statusPins.textContent = String(markers.size);
         ok(statusDb, "connected ✅");
       },
@@ -147,8 +153,9 @@ form.addEventListener("submit", async (e)=>{
 
   const data = { type, breed, desc, lat, lng, createdAt: serverTimestamp() };
 
+  // Optimistic pin immediately
   const tempMarker = new google.maps.Marker({ position: {lat, lng}, map, title: `${type}: ${breed}` });
-  tempMarker.addListener("click",()=>{
+  tempMarker.addEventListener("click",()=>{
     infoWindow.setContent(infoHTML({ ...data, createdAt:{ toDate: ()=>new Date() } }));
     infoWindow.open({ map, anchor: tempMarker });
   });
