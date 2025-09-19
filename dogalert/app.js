@@ -25,6 +25,7 @@ const db = getFirestore(app);
 // ----------------- MAP -----------------
 let map;
 let markers = [];
+let tempMarker = null;
 
 window.initMap = function () {
   map = new google.maps.Map(document.getElementById("map"), {
@@ -38,6 +39,23 @@ window.initMap = function () {
   });
 
   document.getElementById("status-map").innerText = "ready ✅";
+
+  // Click on map → set lat/lng and show a temp marker
+  map.addListener("click", (event) => {
+    const lat = event.latLng.lat();
+    const lng = event.latLng.lng();
+
+    document.getElementById("lat").value = lat.toFixed(6);
+    document.getElementById("lng").value = lng.toFixed(6);
+
+    if (tempMarker) tempMarker.setMap(null);
+    tempMarker = new google.maps.Marker({
+      position: { lat, lng },
+      map,
+      title: "New report location",
+      icon: { url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" }
+    });
+  });
 
   // Listen for Firestore changes
   const reportsRef = collection(db, "reports");
@@ -87,6 +105,12 @@ if (form) {
       });
       alert("Report submitted!");
       form.reset();
+
+      // remove temp marker after submit
+      if (tempMarker) {
+        tempMarker.setMap(null);
+        tempMarker = null;
+      }
     } catch (err) {
       console.error("Error adding report:", err);
     }
