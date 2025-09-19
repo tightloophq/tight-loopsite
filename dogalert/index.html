@@ -1,50 +1,28 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dog Alert LIVE</title>
+
+  <!-- kill /favicon.ico 404 -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='12' ry='12' fill='%23ff7a00'/%3E%3Ctext x='50' y='62' font-size='64' text-anchor='middle' fill='white'%3E!%3C/text%3E%3C/svg%3E">
+
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f1115;
-      color: #fff;
-      display: flex;
-      height: 100vh;
-    }
-    #sidebar {
-      width: 320px;
-      background: #14171c;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-    }
-    #map {
-      flex: 1;
-    }
-    h1 { font-size: 20px; margin: 0 0 15px; color: #ff6600; }
-    h2 { font-size: 16px; margin-top: 20px; margin-bottom: 5px; color: #ccc; }
-    select, textarea, input {
-      width: 100%; margin-bottom: 10px; padding: 8px;
-      border-radius: 4px; border: none;
-    }
-    button {
-      width: 100%; padding: 10px; background: #ff6600; color: white;
-      border: none; border-radius: 4px; cursor: pointer; font-weight: bold;
-    }
-    button:hover { background: #e65c00; }
-    .status { margin-top: 8px; font-size: 14px; padding: 6px; border-radius: 4px; background: #1c1f26; }
-    .upgrade { margin-top: 20px; padding: 12px; background: #1a1d23; border-radius: 6px; text-align: center; }
-    .upgrade h3 { margin: 0 0 10px; }
-    .upgrade a {
-      display: inline-block; margin-top: 8px; padding: 8px 12px;
-      border-radius: 4px; text-decoration: none; font-weight: bold;
-    }
-    .btn-basic { background: #4aa8ff; color: #000; }
-    .btn-pro { background: #16c784; color: #000; }
+    body { margin:0; font-family:Arial, sans-serif; background:#0f1115; color:#fff; display:flex; height:100vh; }
+    #sidebar { width:320px; background:#14171c; padding:15px; display:flex; flex-direction:column; overflow-y:auto; }
+    #map { flex:1; }
+    h1 { font-size:20px; margin:0 0 15px; color:#ff7a00; }
+    h2 { font-size:16px; margin:20px 0 5px; color:#ccc; }
+    select, textarea, input { width:100%; margin-bottom:10px; padding:8px; border-radius:4px; border:none; }
+    button { width:100%; padding:10px; background:#ff7a00; color:#111; border:none; border-radius:4px; cursor:pointer; font-weight:800; }
+    button:hover { background:#e65c00; }
+    .status { margin-top:8px; font-size:14px; padding:6px; border-radius:4px; background:#1c1f26; }
+    .upgrade { margin-top:20px; padding:12px; background:#1a1d23; border-radius:6px; text-align:center; }
+    .upgrade h3 { margin:0 0 10px; }
+    .upgrade a { display:inline-block; margin-top:8px; padding:8px 12px; border-radius:4px; text-decoration:none; font-weight:800; }
+    .btn-basic { background:#4aa8ff; color:#000; }
+    .btn-pro { background:#16c784; color:#000; }
   </style>
 </head>
 <body>
@@ -66,6 +44,7 @@
         <option value="German Shepherd">German Shepherd</option>
         <option value="Labrador">Labrador</option>
         <option value="Husky">Husky</option>
+        <option value="Other / Unknown">Other / Unknown</option>
       </select>
       <textarea id="desc" placeholder="Color, behavior, collar, direction..." rows="3"></textarea>
       <input type="text" id="lat" placeholder="Latitude (auto if empty)" />
@@ -81,23 +60,24 @@
     <div class="upgrade">
       <h3>Dog Alert Basic · $4.99/mo</h3>
       <p>Remove ads. Support the network. Early features.</p>
-      <a class="btn-basic" href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" target="_blank">Buy Basic</a>
+      <a class="btn-basic" href="https://buy.stripe.com/test_5kQ3cveQYgMD9IzdPW9oc00" target="_blank" rel="noopener">Buy Basic</a>
     </div>
     <div class="upgrade">
       <h3>Dog Alert Pro · $9.99/mo</h3>
       <p>Priority alerts, advanced filters, map export.</p>
-      <a class="btn-pro" href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" target="_blank">Buy Pro</a>
+      <a class="btn-pro" href="https://buy.stripe.com/test_6oU14nbEMeEv9Iz4fm9oc0" target="_blank" rel="noopener">Buy Pro</a>
     </div>
   </div>
 
   <div id="map"></div>
 
-  <!-- App -->
-  <script type="module" src="app.js"></script>
+  <!-- Your app (lives in /dogalert/app.js) -->
+  <script type="module" src="dogalert/app.js"></script>
 
-  <!-- Google Maps -->
-  <script async
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=initMap">
-  </script>
+  <!-- Google Maps (calls window.initMap when ready) -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2VhW6QuHIwEXeP1uB7ARYl-0J3OolOec&callback=initMap&loading=async"
+    async defer></script>
 </body>
 </html>
+
